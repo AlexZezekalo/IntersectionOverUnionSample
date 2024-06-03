@@ -15,4 +15,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "Intersection Over Union Sample"
 include(":app")
- 
+include(":domain")
+include(":data")
+include(":presentation")

@@ -1,4 +1,4 @@
-package com.zezekalo.iou
+package com.zezekalo.iou.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
