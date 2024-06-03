@@ -21,6 +21,9 @@ android {
     kotlinOptions {
         jvmTarget = libs.versions.jvm.target.version.get()
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -30,6 +33,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraint.layout)
+    implementation(libs.timber)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

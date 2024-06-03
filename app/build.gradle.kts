@@ -30,6 +30,9 @@ android {
     kotlinOptions {
         jvmTarget = libs.versions.jvm.target.version.get()
     }
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
@@ -39,7 +42,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-
+    api(libs.timber)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
