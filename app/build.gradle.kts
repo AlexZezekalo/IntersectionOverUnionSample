@@ -44,6 +44,8 @@ dependencies {
     implementation(libs.material)
     api(libs.timber)
 
+    testApi(project(":domain"))
+    testApi(libs.timber)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
