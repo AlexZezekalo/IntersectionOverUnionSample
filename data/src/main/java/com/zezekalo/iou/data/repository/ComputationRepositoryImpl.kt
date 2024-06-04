@@ -5,10 +5,11 @@ import com.zezekalo.iou.domain.model.InputData
 import com.zezekalo.iou.domain.model.OutputData
 import com.zezekalo.iou.domain.model.UnionBox
 import com.zezekalo.iou.domain.repository.ComputationRepository
+import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.min
 
-class ComputationRepositoryImpl: ComputationRepository {
+class ComputationRepositoryImpl @Inject constructor(): ComputationRepository {
 
     override suspend fun computeIntersectionOverUnion(inputData: InputData): OutputData {
         val groundTruthBoundingBox = inputData.groundTruthBoundingBox

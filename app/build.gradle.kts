@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.kotlin.kapt)
 }
 
 android {
@@ -38,11 +40,14 @@ android {
 dependencies {
     implementation(project(":presentation"))
     implementation(project(":data"))
+    api(project(":domain"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     api(libs.timber)
+    implementation(libs.hilt.android)
+    kapt (libs.hilt.compiler)
 
     testApi(project(":domain"))
     testApi(libs.timber)

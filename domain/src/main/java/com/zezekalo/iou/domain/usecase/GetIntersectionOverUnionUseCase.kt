@@ -5,8 +5,10 @@ import com.zezekalo.iou.domain.model.OutputData
 import com.zezekalo.iou.domain.model.exception.CustomException
 import com.zezekalo.iou.domain.repository.ComputationRepository
 import com.zezekalo.iou.domain.validation.Validator
+import javax.inject.Inject
 
-class GetIntersectionOverUnionUseCase(
+
+class GetIntersectionOverUnionUseCase @Inject constructor(
     private val computationRepository: ComputationRepository,
     private val validator: Validator,
 ) {
