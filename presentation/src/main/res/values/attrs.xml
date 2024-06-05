@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomGraphView">
+        <attr name="axesTextColor" format="color"/>
+        <attr name="axesColor" format="color"/>
+        <attr name="graphColor" format="color"/>
+        <attr name="groundTruthColor" format="color"/>
+        <attr name="predictedColor" format="color"/>
+        <attr name="unionColor" format="color"/>
+        <attr name="axisTextSize" format="dimension"/>
+    </declare-styleable>
+</resources>

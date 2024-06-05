@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="light_blue_400">#FF29B6F6</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="gray_200">#FFEEEEEE</color>
+    <color name="gray_400">#FFBDBDBD</color>
+    <color name="gray_600">#FF757575</color>
+
+    <color name="def_text_color">#232323</color>
+    <color name="def_axes_color">#121212</color>
+    <color name="def_graph_color">#434343</color>
+    <color name="def_ground_truth_color">#00FF00</color>
+    <color name="def_predicted_color">#880000FF</color>
+    <color name="def_union_color">#FF0000</color>
+</resources>
