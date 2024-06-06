@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Wide.Vertical">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/boxTitle"
+        style="@style/Widget.Theme.IntersectionOverUnion.Title"
+        tools:text="@string/ground_truth_title" />
+
+    <LinearLayout
+        style="@style/Wide">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/boxLeftText"
+            style="@style/Widget.Theme.IntersectionOverUnion.Text"
+            android:text="@string/left_hint" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/boxTopText"
+            style="@style/Widget.Theme.IntersectionOverUnion.Text"
+            android:text="@string/top_hint" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/boxRightText"
+            style="@style/Widget.Theme.IntersectionOverUnion.Text"
+            android:text="@string/right_hint" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/boxBottomText"
+            style="@style/Widget.Theme.IntersectionOverUnion.Text"
+            android:text="@string/bottom_hint" />
+
+    </LinearLayout>
+
+</LinearLayout>

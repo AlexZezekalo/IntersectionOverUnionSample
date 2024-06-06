@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ground_truth_title">Ground Truth Bounding Box</string>
+    <string name="predicted_title">Predicted Bounding Box</string>
+    <string name="union_box_title">Union Box</string>
+    <string name="left_hint">Left:</string>
+    <string name="top_hint">Top:</string>
+    <string name="right_hint">Right:</string>
+    <string name="bottom_hint">Bottom:</string>
+    <string name="clear_button">Clear</string>
+    <string name="input_data_button">Input data</string>
+    <string name="intersection_over_union">Intersection over Union:</string>
+</resources>

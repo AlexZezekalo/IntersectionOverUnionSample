@@ -38,7 +38,11 @@ dependencies {
     implementation(libs.androidx.constraint.layout)
     implementation(libs.timber)
     implementation(libs.hilt.android)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.fragment.ktx)
     kapt (libs.hilt.compiler)
+    implementation (libs.androidx.navigation.fragment.ktx)
+    implementation (libs.androidx.navigation.ui.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

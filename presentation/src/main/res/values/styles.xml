@@ -1,5 +1,72 @@
 <resources>
-    <style name="Widget.Theme.IntersectionOverUnion.MyView" parent="">
+    <style name="Fill">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="Wrapped">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Wide">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Tall">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="Wide.Vertical">
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="Widget.Theme.IntersectionOverUnion.MyView" parent="Wrapped">
         <item name="android:background">@color/gray_200</item>
+    </style>
+
+    <style name="Widget.Theme.IntersectionOverUnion.Title" parent="Wide">
+        <item name="android:paddingHorizontal">8dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Widget.Theme.IntersectionOverUnion.Text" parent="Wide">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingHorizontal">8dp</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="Widget.Theme.IntersectionOverUnion.BoxContainer" parent="Wide">
+    </style>
+
+    <style name="Widget.Theme.IntersectionOverUnion.InputLayout" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:layout_width">84dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginHorizontal">8dp</item>
+    </style>
+
+    <style name="Widget.Theme.IntersectionOverUnion.Input" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+    </style>
+
+    <style name="Widget.Theme.IntersectionOverUnion.Button" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Widget.Theme.IntersectionOverUnion.StubView" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
     </style>
 </resources>

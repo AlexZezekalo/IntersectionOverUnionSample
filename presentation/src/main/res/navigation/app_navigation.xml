@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_navigation.xml"
+    app:startDestination="@id/graphFragment">
+
+    <fragment
+        android:id="@+id/graphFragment"
+        android:name="com.zezekalo.iou.presentation.ui.fragment.GraphFragment"
+        android:label="Graph Fragment"
+        tools:layout = "@layout/fragment_graph">
+        <action
+            android:id="@+id/graphFragment_to_inputDataDialog"
+            app:destination="@id/inputDataDialog"/>
+    </fragment>
+
+    <dialog
+        android:id="@+id/inputDataDialog"
+        android:label="Input Data Dialog"
+        tools:layout="@layout/dialog_input_data">
+
+    </dialog>
+
+</navigation>

@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.util.Log
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import com.zezekalo.iou.domain.model.BoundingBox
@@ -153,7 +152,7 @@ class CustomGraphView : FrameLayout {
     private fun init() {
         viewWidth = width
         viewHeight = height
-        Log.i(TAG, "init: width: $viewWidth; height: $viewHeight;")
+
         chunksInRow = DEFAULT_CHUNK_IN_A_ROWS
 
         chunkX = viewWidth/(chunksInRow + 2).toFloat()
@@ -253,7 +252,6 @@ class CustomGraphView : FrameLayout {
 
     companion object {
 
-        private const val TAG = "CustomGraphView"
         private const val DEFAULT_CHUNK_IN_A_ROWS = 16
     }
 }
