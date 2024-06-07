@@ -10,4 +10,9 @@
     <string name="clear_button">Clear</string>
     <string name="input_data_button">Input data</string>
     <string name="intersection_over_union">Intersection over Union:</string>
+    
+    <string name="generic_error_message">Something went wrong!</string>
+    <string name="invalid_box_coordinate_error_message">Box coordinate must be in a range of 0..16</string>
+    <string name="right_coordinate_invalid_error_message">Right must be >= Left</string>
+    <string name="bottom_coordinate_invalid_error_message">Bottom must be >= Top</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.zezekalo.iou.presentation.ui.util
+package com.zezekalo.iou.presentation.ui.util.extensions
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

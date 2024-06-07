@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import androidx.annotation.CheckResult
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
-import com.zezekalo.iou.presentation.ui.util.createViewModel
-import com.zezekalo.iou.presentation.ui.util.inflateBinding
+import com.zezekalo.iou.presentation.ui.util.extensions.createViewModel
+import com.zezekalo.iou.presentation.ui.util.extensions.inflateBinding
 import com.zezekalo.iou.presentation.viewmodel.base.BaseViewModel
 
 abstract class BaseDialog<VB: ViewBinding, VM: BaseViewModel>: Fragment(), BaseView<VB, VM> {
 
-    private val  viewModel: VM by lazy (::createViewModel)
+    protected val  viewModel: VM by lazy (::createViewModel)
 
     private var binding: VB? = null
 
