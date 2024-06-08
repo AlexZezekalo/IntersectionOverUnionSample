@@ -4,18 +4,15 @@ import com.zezekalo.iou.domain.model.InputData
 import com.zezekalo.iou.domain.model.OutputData
 import com.zezekalo.iou.domain.model.exception.CustomException
 import com.zezekalo.iou.domain.repository.ComputationRepository
-import com.zezekalo.iou.domain.validation.Validator
 import javax.inject.Inject
 
 
 class GetIntersectionOverUnionUseCase @Inject constructor(
     private val computationRepository: ComputationRepository,
-    private val validator: Validator,
 ) {
 
     suspend operator fun invoke(inputData: InputData): Result<OutputData> {
         return try {
-            validator.validateInputData(inputData)
             val outputData = computationRepository.computeIntersectionOverUnion(inputData)
             Result.success(outputData)
         } catch (e: CustomException) {

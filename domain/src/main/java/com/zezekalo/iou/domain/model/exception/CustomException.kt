@@ -4,7 +4,7 @@ open class CustomException(
     open val msg: String = "Custom Exception message",
 ) : RuntimeException()
 
-class InvalidBoxCoordinateException(
+class InvalidBoxCoordinateRangeException(
     override val msg: String = "Invalid box coordinate",
 ) : CustomException()
 
