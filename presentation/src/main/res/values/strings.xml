@@ -2,6 +2,8 @@
 <resources>
     <string name="ground_truth_title">Ground Truth Bounding Box</string>
     <string name="predicted_title">Predicted Bounding Box</string>
+    <string name="ground_truth_subtitle">Ground Truth</string>
+    <string name="predicted_subtitle">Predicted</string>
     <string name="union_box_title">Union Box</string>
     <string name="left_hint">Left:</string>
     <string name="top_hint">Top:</string>
@@ -9,10 +11,15 @@
     <string name="bottom_hint">Bottom:</string>
     <string name="clear_button">Clear</string>
     <string name="input_data_button">Input data</string>
+    <string name="apply_button">Apply</string>
     <string name="intersection_over_union">Intersection over Union:</string>
+    <string name="input_coordinates_description">Please, provide coordinates for both GroundTruth and Predicted boxes. Every value has to be in a range 0..16</string>
     
     <string name="generic_error_message">Something went wrong!</string>
     <string name="invalid_box_coordinate_error_message">Box coordinate must be in a range of 0..16</string>
     <string name="right_coordinate_invalid_error_message">Right must be >= Left</string>
     <string name="bottom_coordinate_invalid_error_message">Bottom must be >= Top</string>
+    <string name="close_button">Close</string>
+    <string name="dialog_title">Input coordinates</string>
+
 </resources>

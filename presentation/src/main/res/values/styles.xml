@@ -34,6 +34,18 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="Widget.Theme.IntersectionOverUnion.Subtitle" parent="Wide">
+        <item name="android:padding">2dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Widget.Theme.IntersectionOverUnion.Description" parent="Wide">
+        <item name="android:paddingHorizontal">8dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <style name="Widget.Theme.IntersectionOverUnion.Text" parent="Wide">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_weight">1</item>
@@ -49,17 +61,29 @@
     </style>
 
     <style name="Widget.Theme.IntersectionOverUnion.InputLayout" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="android:layout_width">84dp</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginHorizontal">8dp</item>
+        <item name="android:layout_marginVertical">4dp</item>
     </style>
 
     <style name="Widget.Theme.IntersectionOverUnion.Input" parent="">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:inputType">number</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:maxLength">2</item>
+        <item name="android:digits">0123456789</item>
+        <item name="android:imeOptions">actionNext</item>
     </style>
 
     <style name="Widget.Theme.IntersectionOverUnion.Button" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Widget.Theme.IntersectionOverUnion.DialogButton" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
@@ -68,5 +92,8 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">0dp</item>
         <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="DialogStyle" parent="@style/ThemeOverlay.MaterialComponents.Dialog">
     </style>
 </resources>

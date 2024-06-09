@@ -8,8 +8,16 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.viewbinding.ViewBinding
 import com.zezekalo.iou.presentation.ui.base.BaseView
 import com.zezekalo.iou.presentation.viewmodel.base.BaseViewModel
-import java.lang.reflect.Method
-import java.lang.reflect.Modifier
+import kotlin.reflect.KFunction
+
+@CheckResult
+fun <VB : ViewBinding> BaseView<VB, *>.inflateBinding(
+    layoutInflater: LayoutInflater,
+    position: Int = 0,
+): VB =
+    this::class
+        .getFunFromGenericClass<VB>(position, true, ::isInflateWithoutParentFun)
+        .call(layoutInflater)
 
 @Suppress("UNCHECKED_CAST")
 @CheckResult
@@ -18,22 +26,25 @@ fun <VB : ViewBinding> BaseView<VB, *>.inflateBinding(
     parent: ViewGroup?,
     attachToRoot: Boolean = false
 ): VB =
-    javaClass
-        .getFunFromGenericClass<VB>(0, ::isInflateWithParentFun)
-        .invoke(null, layoutInflater, parent, attachToRoot) as VB
+    this::class
+        .getFunFromGenericClass<VB>(0, true, ::isInflateWithParentFun)
+        .call(layoutInflater, parent, attachToRoot) as VB
 
 
-private fun isInflateWithParentFun(method: Method): Boolean =
-    method.run {
-        Modifier.isStatic(modifiers) &&
-                parameterTypes.size == 3 &&
-                parameterTypes[0] == LayoutInflater::class.java &&
-                parameterTypes[1] == ViewGroup::class.java &&
-                parameterTypes[2] == Boolean::class.java
-    }
+@CheckResult private fun isInflateWithoutParentFun(function: KFunction<*>): Boolean = function.run {
+    parameters.size == 1 &&
+            parameters[0].type.classifier == LayoutInflater::class
+}
+
+@CheckResult private fun isInflateWithParentFun(function: KFunction<*>): Boolean = function.run {
+    parameters.size == 3 &&
+            parameters[0].type.classifier == LayoutInflater::class &&
+            parameters[1].type.classifier == ViewGroup::class &&
+            parameters[2].type.classifier == Boolean::class
+}
 
 @CheckResult fun <VM, SO> SO.createViewModel(position: Int = 1): VM
         where VM : BaseViewModel,
               SO : BaseView<*, VM>,
               SO : ViewModelStoreOwner =
-    ViewModelProvider(this)[this::class.java.getGenericClass<VM>(position)]
+    ViewModelProvider(this)[this::class.getGenericClass<VM>(position).java]

@@ -11,14 +11,18 @@
         android:label="Graph Fragment"
         tools:layout = "@layout/fragment_graph">
         <action
-            android:id="@+id/graphFragment_to_inputDataDialog"
+            android:id="@+id/action_graphFragment_to_inputDataDialog"
             app:destination="@id/inputDataDialog"/>
     </fragment>
 
     <dialog
         android:id="@+id/inputDataDialog"
+        android:name="com.zezekalo.iou.presentation.ui.dialog.InputDataDialog"
         android:label="Input Data Dialog"
         tools:layout="@layout/dialog_input_data">
+        <argument
+            android:name="inputData"
+            app:argType="com.zezekalo.iou.presentation.model.InputDataUi"/>
 
     </dialog>
 

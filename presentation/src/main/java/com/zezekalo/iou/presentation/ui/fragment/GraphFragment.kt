@@ -1,19 +1,22 @@
 package com.zezekalo.iou.presentation.ui.fragment
 
 import android.os.Bundle
+import android.view.View
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.zezekalo.iou.domain.model.*
 import com.zezekalo.iou.presentation.R
 import com.zezekalo.iou.presentation.databinding.BoundingBoxTextLayoutBinding
 import com.zezekalo.iou.presentation.databinding.FragmentGraphBinding
+import com.zezekalo.iou.presentation.model.BoundingBoxUi
 import com.zezekalo.iou.presentation.ui.base.BaseFragment
-import com.zezekalo.iou.presentation.ui.util.mapper.ThrowableToErrorMessageMapper
 import com.zezekalo.iou.presentation.ui.util.extensions.showBoxCoordinate
 import com.zezekalo.iou.presentation.ui.util.extensions.showIoU
+import com.zezekalo.iou.presentation.ui.util.mapper.ThrowableToErrorMessageMapper
 import com.zezekalo.iou.presentation.viewmodel.GraphViewModel
 import com.zezekalo.iou.presentation.viewmodel.UiState
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,29 +34,38 @@ class GraphFragment : BaseFragment<FragmentGraphBinding, GraphViewModel>() {
             predictedBoxCoordinatesLayout.boxTitle.text = getString(R.string.predicted_title)
             unionBoxCoordinatesLayout.boxTitle.text = getString(R.string.union_box_title)
 
-            clearButton.setOnClickListener { viewModel.clearData() }
-            inputButton.setOnClickListener {
-                //TODO just for test purpose, rewrite later
-                viewModel.startTestBoxes()
-            }
+            clearButton.setOnClickListener(::clearData)
+            inputButton.setOnClickListener(::navigateToInputDataDialog)
         }
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    private fun clearData(view: View) {
+        viewModel.clearData()
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    private fun navigateToInputDataDialog(view: View) {
+        val inputData = viewModel.getInputData()
+        val action = GraphFragmentDirections.actionGraphFragmentToInputDataDialog(inputData)
+        findNavController().navigate(action)
     }
 
     override fun listenViewModel(viewModel: GraphViewModel) {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { viewModel.uiState.collect(::onUiStateChange) }
-                launch { viewModel.groundTruthBoundingBox.collect(::onGroundTruthBoundingBoxChanged) }
-                launch { viewModel.predictedBoundingBox.collect(::onPredictedBoundingBoxChanged) }
+                launch { viewModel.inputGroundTruthBoundingBox.collect(::onGroundTruthBoundingBoxChanged) }
+                launch { viewModel.inputPredictedBoundingBox.collect(::onPredictedBoundingBoxChanged) }
             }
         }
     }
 
-    private fun onGroundTruthBoundingBoxChanged(box: GroundTruthBoundingBox) {
+    private fun onGroundTruthBoundingBoxChanged(box: BoundingBoxUi) {
         requireBinding().groundTruthBoxCoordinatesLayout.also { showBoundingBoxCoordinates(box, it) }
     }
 
-    private fun onPredictedBoundingBoxChanged(box: PredictedBoundingBox) {
+    private fun onPredictedBoundingBoxChanged(box: BoundingBoxUi) {
         requireBinding().predictedBoxCoordinatesLayout.also { showBoundingBoxCoordinates(box, it) }
     }
 

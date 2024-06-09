@@ -1,13 +1,16 @@
 package com.zezekalo.iou.presentation.viewmodel
 
-import com.zezekalo.iou.domain.model.GroundTruthBoundingBox
-import com.zezekalo.iou.domain.model.InputData
 import com.zezekalo.iou.domain.model.OutputData
-import com.zezekalo.iou.domain.model.PredictedBoundingBox
 import com.zezekalo.iou.domain.usecase.GetIntersectionOverUnionUseCase
+import com.zezekalo.iou.presentation.model.BoundingBoxUi
+import com.zezekalo.iou.presentation.model.InputDataUi
+import com.zezekalo.iou.presentation.model.toDomain
 import com.zezekalo.iou.presentation.viewmodel.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,32 +28,31 @@ class GraphViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UiState>(UiState.Clear)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    private val _inputData = MutableStateFlow(InputData.EMPTY)
-    private val inputData = _inputData.asStateFlow()
+    private val _inputGroundTruthBoundingBox = MutableStateFlow(BoundingBoxUi.EMPTY)
+    val inputGroundTruthBoundingBox: StateFlow<BoundingBoxUi> = _inputGroundTruthBoundingBox.asStateFlow()
 
-    val groundTruthBoundingBox = inputData.map { it.groundTruthBoundingBox }
-    val predictedBoundingBox = inputData.map { it.predictedBoundingBox }
+    private val _inputPredictedBoundingBox = MutableStateFlow(BoundingBoxUi.EMPTY)
+    val inputPredictedBoundingBox: StateFlow<BoundingBoxUi> = _inputPredictedBoundingBox.asStateFlow()
 
     fun clearData() {
-        updateInputData(InputData.EMPTY)
+        setInputData(InputDataUi.INITIAL)
         updateUiState(UiState.Clear)
     }
 
-    //TODO only for test purposes, remove later
-    fun startTestBoxes() {
-        updateInputData(inputDataWithOverlapping)
-        calculateIntersectionOverUnion(inputDataWithOverlapping.groundTruthBoundingBox, inputDataWithOverlapping.predictedBoundingBox)
+    fun getInputData(): InputDataUi =
+        InputDataUi(
+            groundTruthBoundingBox = inputGroundTruthBoundingBox.value,
+            predictedBoundingBox = inputPredictedBoundingBox.value
+        )
+
+    fun setInputData(inputData: InputDataUi) {
+        _inputGroundTruthBoundingBox.update { inputData.groundTruthBoundingBox }
+        _inputPredictedBoundingBox.update { inputData.predictedBoundingBox }
     }
 
-    fun calculateIntersectionOverUnion(
-        groundTruthBoundingBox: GroundTruthBoundingBox,
-        predictedBoundingBox: PredictedBoundingBox
-    ) {
+    fun calculateIntersectionOverUnion() {
         scope.launch {
-            val inputData = InputData(
-                groundTruthBoundingBox = groundTruthBoundingBox,
-                predictedBoundingBox = predictedBoundingBox
-            )
+            val inputData = getInputData().toDomain()
             useCase(inputData)
                 .onFailure { updateUiState(UiState.Error(it)) }
                 .onSuccess { updateUiState(UiState.Success(it)) }
@@ -60,24 +62,4 @@ class GraphViewModel @Inject constructor(
     private fun updateUiState(uiState: UiState) {
         _uiState.update { uiState }
     }
-
-    private fun updateInputData(inputData: InputData) {
-        _inputData.update { inputData }
-    }
 }
-
-//TODO only for test purposes, remove later
-val inputDataWithOverlapping: InputData = InputData(
-    groundTruthBoundingBox = GroundTruthBoundingBox(
-        left = 3,
-        top = 3,
-        right = 10,
-        bottom = 10
-    ),
-    predictedBoundingBox = PredictedBoundingBox(
-        left = 7,
-        top = 7,
-        right = 13,
-        bottom = 13
-    )
-)

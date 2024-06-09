@@ -1,7 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Wrapped"
+    android:padding="8dp"
+    android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/boxTitle"
+        style="@style/Widget.Theme.IntersectionOverUnion.Title"
+        android:gravity="center"
+        android:text="@string/dialog_title" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/description"
+        style="@style/Widget.Theme.IntersectionOverUnion.Description"
+        android:gravity="center"
+        android:text="@string/input_coordinates_description" />
+
+    <ScrollView
+        style="@style/Wrapped"
+        android:scrollbarStyle="outsideInset">
+
+        <LinearLayout
+            style="@style/Wide.Vertical">
+
+            <LinearLayout
+                style="@style/Wrapped"
+                android:gravity="center">
+
+                <include
+                    android:id="@+id/inputGroundTruthBoxCoordinatesLayout"
+                    layout="@layout/bounding_box_input_layout"/>
+
+                <include
+                    android:id="@+id/inputPredictedBoxCoordinatesLayout"
+                    layout="@layout/bounding_box_input_layout"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/buttonContainerLayout"
+                style="@style/Wide"
+                android:paddingHorizontal="8dp"
+                android:paddingTop="4dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/clearButton"
+                    android:text="@string/clear_button"
+                    style="@style/Widget.Theme.IntersectionOverUnion.DialogButton" />
+
+                <View style="@style/Widget.Theme.IntersectionOverUnion.StubView" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/closeButton"
+                    android:text="@string/close_button"
+                    style="@style/Widget.Theme.IntersectionOverUnion.DialogButton" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/applyButton"
+                    android:text="@string/apply_button"
+                    style="@style/Widget.Theme.IntersectionOverUnion.DialogButton" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
