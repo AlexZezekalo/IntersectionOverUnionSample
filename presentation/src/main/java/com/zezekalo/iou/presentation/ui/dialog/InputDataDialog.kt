@@ -3,15 +3,25 @@ package com.zezekalo.iou.presentation.ui.dialog
 import android.os.Bundle
 import android.text.InputFilter
 import android.view.inputmethod.EditorInfo
+import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.textfield.TextInputLayout
+import com.zezekalo.iou.domain.model.exception.CustomException
 import com.zezekalo.iou.presentation.R
 import com.zezekalo.iou.presentation.databinding.BoundingBoxInputLayoutBinding
 import com.zezekalo.iou.presentation.databinding.DialogInputDataBinding
+import com.zezekalo.iou.presentation.model.BoundingBoxUi
+import com.zezekalo.iou.presentation.model.InputDataUi
 import com.zezekalo.iou.presentation.ui.base.BaseDialog
 import com.zezekalo.iou.presentation.ui.util.MinMaxIntentFilter
+import com.zezekalo.iou.presentation.ui.util.extensions.EMPTY
+import com.zezekalo.iou.presentation.ui.util.mapper.ThrowableToErrorMessageMapper
 import com.zezekalo.iou.presentation.viewmodel.InputDataViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -20,6 +30,8 @@ class InputDataDialog: BaseDialog<DialogInputDataBinding, InputDataViewModel>() 
     private val args: InputDataDialogArgs by navArgs()
 
     @Inject lateinit var inputFilter: MinMaxIntentFilter
+
+    @Inject lateinit var mapper: ThrowableToErrorMessageMapper
 
     override fun onViewBound(binding: DialogInputDataBinding, savedInstanceState: Bundle?) {
         viewModel.setInputData(args.inputData)
@@ -46,13 +58,11 @@ class InputDataDialog: BaseDialog<DialogInputDataBinding, InputDataViewModel>() 
             inputPredictedBoxCoordinatesLayout.boxBottomInput.imeOptions = EditorInfo.IME_ACTION_DONE
 
             inputGroundTruthBoxCoordinatesLayout.boxBottomInput.setOnEditorActionListener { view, actionId, event ->
-                Timber.i("OnEditorActionListener: 1 actionId = $actionId, event = $event")
                 if (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_NULL) {
-                    Timber.i("OnEditorActionListener: 2 actionId = $actionId, event = $event")
                     inputPredictedBoxCoordinatesLayout.boxLeftInput.requestFocus()
-                    true
+                    return@setOnEditorActionListener true
                 }
-                false
+                return@setOnEditorActionListener false
             }
         }
     }
@@ -68,13 +78,96 @@ class InputDataDialog: BaseDialog<DialogInputDataBinding, InputDataViewModel>() 
 
     private fun setupListeners(binding: DialogInputDataBinding) {
         with(binding) {
+            inputGroundTruthBoxCoordinatesLayout.boxLeftInput.addTextChangedListener {
+                viewModel.processGroundTruthLeftInput(it)
+            }
+            inputGroundTruthBoxCoordinatesLayout.boxTopInput.addTextChangedListener {
+                viewModel.processGroundTruthTopInput(it)
+            }
+            inputGroundTruthBoxCoordinatesLayout.boxRightInput.addTextChangedListener {
+                viewModel.processGroundTruthRightInput(it)
+            }
+            inputGroundTruthBoxCoordinatesLayout.boxBottomInput.addTextChangedListener {
+                viewModel.processGroundTruthBottomInput(it)
+            }
+            inputPredictedBoxCoordinatesLayout.boxLeftInput.addTextChangedListener {
+                viewModel.processPredictedLeftInput(it)
+            }
+            inputPredictedBoxCoordinatesLayout.boxTopInput.addTextChangedListener {
+                viewModel.processPredictedTopInput(it)
+            }
+            inputPredictedBoxCoordinatesLayout.boxRightInput.addTextChangedListener {
+                viewModel.processPredictedRightInput(it)
+            }
+            inputPredictedBoxCoordinatesLayout.boxBottomInput.addTextChangedListener {
+                viewModel.processPredictedBottomInput(it)
+            }
+
             closeButton.setOnClickListener { dismiss() }
-            applyButton.setOnClickListener {  }
-            clearButton.setOnClickListener {  }
+            clearButton.setOnClickListener { viewModel.setInputData(InputDataUi.INITIAL) }
+            applyButton.setOnClickListener { viewModel.validateInput() }
         }
     }
 
     override fun listenViewModel(viewModel: InputDataViewModel) {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch { viewModel.inputError.collect(::onGeneralErrorGot) }
 
+                launch { viewModel.inputGroundTruthBoundingBox.collect(::onGroundTruthBoxChanged) }
+                launch { viewModel.inputPredictedBoundingBox.collect(::onPredictedBoxChanged) }
+
+                launch { viewModel.groundTruthLeftError.collect {
+                    onGeneralErrorGot(requireBinding().inputGroundTruthBoxCoordinatesLayout.boxLeftContainer, it)
+                }}
+                launch { viewModel.groundTruthTopError.collect {
+                    onGeneralErrorGot(requireBinding().inputGroundTruthBoxCoordinatesLayout.boxTopContainer, it)
+                }}
+                launch { viewModel.groundTruthRightError.collect {
+                    onGeneralErrorGot(requireBinding().inputGroundTruthBoxCoordinatesLayout.boxRightContainer, it)
+                }}
+                launch { viewModel.groundTruthBottomError.collect {
+                    onGeneralErrorGot(requireBinding().inputGroundTruthBoxCoordinatesLayout.boxBottomContainer, it)
+                }}
+                launch { viewModel.predictedLeftError.collect {
+                        onGeneralErrorGot(requireBinding().inputPredictedBoxCoordinatesLayout.boxLeftContainer, it)
+                }}
+                launch { viewModel.predictedTopError.collect {
+                    onGeneralErrorGot(requireBinding().inputPredictedBoxCoordinatesLayout.boxTopContainer, it)
+                }}
+                launch { viewModel.predictedRightError.collect {
+                    onGeneralErrorGot(requireBinding().inputPredictedBoxCoordinatesLayout.boxRightContainer, it)
+                }}
+                launch { viewModel.predictedBottomError.collect {
+                    onGeneralErrorGot(requireBinding().inputPredictedBoxCoordinatesLayout.boxBottomContainer, it)
+                }}
+            }
+        }
+    }
+
+    private fun onGeneralErrorGot(hasGeneralError: Boolean) {
+        requireBinding().applyButton.isEnabled = !hasGeneralError
+    }
+
+    private fun onGroundTruthBoxChanged(box: BoundingBoxUi) {
+        requireBinding().inputGroundTruthBoxCoordinatesLayout.run {
+            boxLeftInput.setText(box.left.toString())
+            boxTopInput.setText(box.top.toString())
+            boxRightInput.setText(box.right.toString())
+            boxBottomInput.setText(box.bottom.toString())
+        }
+    }
+
+    private fun onPredictedBoxChanged(box: BoundingBoxUi) {
+        requireBinding().inputPredictedBoxCoordinatesLayout.run {
+            boxLeftInput.setText(box.left.toString())
+            boxTopInput.setText(box.top.toString())
+            boxRightInput.setText(box.right.toString())
+            boxBottomInput.setText(box.bottom.toString())
+        }
+    }
+
+    private fun onGeneralErrorGot(layout: TextInputLayout, exception: CustomException?) {
+        layout.error = if (exception != null) mapper.map(exception) else String.EMPTY
     }
 }

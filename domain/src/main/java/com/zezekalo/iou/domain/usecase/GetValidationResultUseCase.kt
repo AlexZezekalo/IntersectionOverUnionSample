@@ -9,6 +9,6 @@ class GetValidationResultUseCase @Inject constructor(
     private val validator: Validator,
 ) {
 
-    suspend fun invoke(boundingBox: BoundingBox): Result<ValidationResult> =
+    suspend operator fun invoke(boundingBox: BoundingBox): ValidationResult =
         validator.validateBoundingBoxCoordinates(boundingBox)
 }

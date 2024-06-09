@@ -16,9 +16,9 @@
     <string name="input_coordinates_description">Please, provide coordinates for both GroundTruth and Predicted boxes. Every value has to be in a range 0..16</string>
     
     <string name="generic_error_message">Something went wrong!</string>
-    <string name="invalid_box_coordinate_error_message">Box coordinate must be in a range of 0..16</string>
-    <string name="right_coordinate_invalid_error_message">Right must be >= Left</string>
-    <string name="bottom_coordinate_invalid_error_message">Bottom must be >= Top</string>
+    <string name="invalid_box_coordinate_error_message">Must be 0..16</string>
+    <string name="right_coordinate_invalid_error_message">Left > Right</string>
+    <string name="bottom_coordinate_invalid_error_message">Top > Bottom</string>
     <string name="close_button">Close</string>
     <string name="dialog_title">Input coordinates</string>
 

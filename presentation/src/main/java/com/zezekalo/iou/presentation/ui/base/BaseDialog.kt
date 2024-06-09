@@ -35,7 +35,11 @@ abstract class BaseDialog<VB: ViewBinding, VM: BaseViewModel>: DialogFragment(),
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
-        object : AppCompatDialog(requireContext(), theme){}.apply {
+        object : AppCompatDialog(requireContext(), theme){
+            override fun onBackPressed() {
+                //No action, close only due to button click
+            }
+        }.apply {
             setCanceledOnTouchOutside(isCanceledOnTouchOutside)
         }
 

@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class ValidatorImpl @Inject constructor() : Validator {
 
-    override suspend fun validateBoundingBoxCoordinates(boundingBox: BoundingBox): Result<ValidationResult> {
+    override suspend fun validateBoundingBoxCoordinates(boundingBox: BoundingBox): ValidationResult {
         val errors: HashMap<Coordinate, CustomException?> = HashMap(EnumSet.allOf(Coordinate::class.java).associateWith { null })
 
         validateCoordinateRange(Coordinate.LEFT, boundingBox.left, errors)
@@ -23,7 +23,7 @@ class ValidatorImpl @Inject constructor() : Validator {
         if (errors[Coordinate.BOTTOM] == null) {
             validateBottomCoordinate(boundingBox, errors)
         }
-        return Result.success(ValidationResult(errors))
+        return ValidationResult(errors)
     }
 
     private fun validateCoordinateRange(
