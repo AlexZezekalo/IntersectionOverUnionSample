@@ -18,5 +18,11 @@ jobs:
         uses: android-actions/setup-android@v2
       - name: Grand execute permissions to gradlew
         run: chmod +x gradlew
-      - name: Run Linters and Test
-        run: ./gradlew check
+      - name: Lint
+        run: ./gradlew lintDebug
+      # Execute unit tests
+      - name: Unit Test
+        run: ./gradlew testDebugUnitTest
+      - name: Android Test Report
+        uses: asadmansr/android-test-report-action@v1.2.0
+        if: ${{ always() }} # IMPORTANT: run Android Test Report regardless
