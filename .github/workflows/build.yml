@@ -81,7 +81,7 @@ jobs:
           storePassword:${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword:${{ secrets.ALIAS_PASSWORD }}
           keyAlias:${{ secrets.ALIAS_NAME }}
-          storeFile:"..${{ secrets.KEYSTORE_DIR }}/${{ secrets.KEYSTORE_FILE_NAME }}"
+          storeFile:..${{ secrets.KEYSTORE_DIR }}/${{ secrets.KEYSTORE_FILE_NAME }}
           EOF
 
       - name: Build prodRelease
