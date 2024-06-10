@@ -1,5 +1,6 @@
 package com.zezekalo.iou.presentation.ui.base
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -36,6 +37,8 @@ abstract class BaseDialog<VB: ViewBinding, VM: BaseViewModel>: DialogFragment(),
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
         object : AppCompatDialog(requireContext(), theme){
+            @Deprecated("Deprecated in Java")
+            @SuppressLint("MissingSuperCall")
             override fun onBackPressed() {
                 //No action, close only due to button click
             }
