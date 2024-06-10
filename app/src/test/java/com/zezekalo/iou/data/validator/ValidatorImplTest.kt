@@ -3,12 +3,10 @@ package com.zezekalo.iou.data.validator
 import com.zezekalo.iou.domain.model.Coordinate
 import com.zezekalo.iou.domain.model.exception.InvalidBoxCoordinateRangeException
 import com.zezekalo.iou.domain.model.exception.RightCoordinateNotValidException
-import com.zezekalo.iou.domain.model.exception.ValidationResult
 import com.zezekalo.iou.domain.validation.Validator
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
-
 import org.junit.Assert.*
+import org.junit.Test
 
 class ValidatorImplTest {
 
@@ -20,20 +18,17 @@ class ValidatorImplTest {
 
         val result = validator.validateBoundingBoxCoordinates(boundingBox)
 
-        assertTrue(result.isSuccess)
-        val validationResult: ValidationResult? = result.getOrNull()
-        assertNotNull(validationResult)
-        val errors = validationResult?.errors
+        val errors = result.errors
         assertNotNull(errors)
 
-        assertNotNull(errors?.get(Coordinate.LEFT))
-        assert(errors?.get(Coordinate.LEFT) is InvalidBoxCoordinateRangeException)
+        assertNotNull(errors[Coordinate.LEFT])
+        assert(errors[Coordinate.LEFT] is InvalidBoxCoordinateRangeException)
 
-        assertNull(errors?.get(Coordinate.TOP))
-        assertNull(errors?.get(Coordinate.RIGHT))
+        assertNull(errors[Coordinate.TOP])
+        assertNull(errors[Coordinate.RIGHT])
 
-        assertNotNull(errors?.get(Coordinate.BOTTOM))
-        assert(errors?.get(Coordinate.BOTTOM) is InvalidBoxCoordinateRangeException)
+        assertNotNull(errors[Coordinate.BOTTOM])
+        assert(errors[Coordinate.BOTTOM] is InvalidBoxCoordinateRangeException)
     }
 
     @Test
@@ -42,13 +37,10 @@ class ValidatorImplTest {
 
         val result = validator.validateBoundingBoxCoordinates(boundingBox)
 
-        assertTrue(result.isSuccess)
-        val validationResult: ValidationResult? = result.getOrNull()
-        assertNotNull(validationResult)
-        val errors = validationResult?.errors
+        val errors = result.errors
         assertNotNull(errors)
 
-        assertTrue(errors?.all { it.value == null } == true)
+        assertTrue(errors.all { it.value == null })
     }
 
     @Test
@@ -57,12 +49,12 @@ class ValidatorImplTest {
 
         val result = validator.validateBoundingBoxCoordinates(boundingBox)
 
-        val errors = result.getOrNull()?.errors
+        val errors = result.errors
 
-        assertNotNull(errors?.get(Coordinate.RIGHT))
-        assert(errors?.get(Coordinate.RIGHT) is RightCoordinateNotValidException)
+        assertNotNull(errors[Coordinate.RIGHT])
+        assert(errors[Coordinate.RIGHT] is RightCoordinateNotValidException)
 
-        assertNotNull(errors?.get(Coordinate.BOTTOM))
-        assert(errors?.get(Coordinate.BOTTOM) is InvalidBoxCoordinateRangeException)
+        assertNotNull(errors[Coordinate.BOTTOM])
+        assert(errors[Coordinate.BOTTOM] is InvalidBoxCoordinateRangeException)
     }
 }

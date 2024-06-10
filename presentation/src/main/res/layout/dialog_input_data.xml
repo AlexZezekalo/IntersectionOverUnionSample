@@ -19,14 +19,14 @@
         android:text="@string/input_coordinates_description" />
 
     <ScrollView
-        style="@style/Wrapped"
+        style="@style/Wide"
         android:scrollbarStyle="outsideInset">
 
         <LinearLayout
             style="@style/Wide.Vertical">
 
             <LinearLayout
-                style="@style/Wrapped"
+                style="@style/Wide"
                 android:gravity="center">
 
                 <include
