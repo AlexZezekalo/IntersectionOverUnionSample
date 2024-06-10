@@ -15,7 +15,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -69,6 +68,9 @@ class InputDataViewModel @Inject constructor(
         groundTruthError, predictedError -> groundTruthError || predictedError
     }
 
+    private val _validatedInputData = MutableStateFlow<InputDataUi?>(null)
+    val validatedInputData: StateFlow<InputDataUi?> = _validatedInputData.asStateFlow()
+
     fun setInputData(inputData: InputDataUi) {
         _inputGroundTruthBoundingBox.update { inputData.groundTruthBoundingBox }
         _inputPredictedBoundingBox.update { inputData.predictedBoundingBox }
@@ -81,11 +83,16 @@ class InputDataViewModel @Inject constructor(
             val groundTruthValidationResult = async { useCase(groundTruthBoundingBox) }.await()
             val predictedValidationResult = async { useCase(predictedBoundingBox) }.await()
 
-            parseValidationResult(groundTruthValidationResult, groundTruthErrorMap)
-            parseValidationResult(predictedValidationResult, predictedErrorMap)
-
             if (groundTruthValidationResult.noError() && predictedValidationResult.noError()) {
-                Timber.i("No errors found in input data!")
+                _validatedInputData.update {
+                    InputDataUi(
+                        groundTruthBoundingBox = groundTruthBoundingBox,
+                        predictedBoundingBox = predictedBoundingBox
+                    )
+                }
+            } else {
+                parseValidationResult(groundTruthValidationResult, groundTruthErrorMap)
+                parseValidationResult(predictedValidationResult, predictedErrorMap)
             }
         }
     }

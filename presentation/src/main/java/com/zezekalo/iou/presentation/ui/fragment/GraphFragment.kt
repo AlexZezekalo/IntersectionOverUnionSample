@@ -3,6 +3,8 @@ package com.zezekalo.iou.presentation.ui.fragment
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.fragment.app.clearFragmentResultListener
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -13,7 +15,9 @@ import com.zezekalo.iou.presentation.R
 import com.zezekalo.iou.presentation.databinding.BoundingBoxTextLayoutBinding
 import com.zezekalo.iou.presentation.databinding.FragmentGraphBinding
 import com.zezekalo.iou.presentation.model.BoundingBoxUi
+import com.zezekalo.iou.presentation.model.InputDataUi
 import com.zezekalo.iou.presentation.ui.base.BaseFragment
+import com.zezekalo.iou.presentation.ui.dialog.InputDataDialog
 import com.zezekalo.iou.presentation.ui.util.extensions.showBoxCoordinate
 import com.zezekalo.iou.presentation.ui.util.extensions.showIoU
 import com.zezekalo.iou.presentation.ui.util.mapper.ThrowableToErrorMessageMapper
@@ -48,17 +52,31 @@ class GraphFragment : BaseFragment<FragmentGraphBinding, GraphViewModel>() {
     private fun navigateToInputDataDialog(view: View) {
         val inputData = viewModel.getInputData()
         val action = GraphFragmentDirections.actionGraphFragmentToInputDataDialog(inputData)
-        findNavController().navigate(action)
+        findNavController().navigate(action).also {
+            setInputDataResultListener()
+        }
+    }
+
+    private fun setInputDataResultListener() {
+        setFragmentResultListener(InputDataDialog.REQUEST_KEY) { _, bundle ->
+            clearFragmentResultListener(InputDataDialog.REQUEST_KEY)
+            val inputData = bundle.getParcelable<InputDataUi>(InputDataDialog.INPUT_DATA)
+            inputData?.let { viewModel.setInputData(it) }
+        }
     }
 
     override fun listenViewModel(viewModel: GraphViewModel) {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { viewModel.uiState.collect(::onUiStateChange) }
-                launch { viewModel.inputGroundTruthBoundingBox.collect(::onGroundTruthBoundingBoxChanged) }
-                launch { viewModel.inputPredictedBoundingBox.collect(::onPredictedBoundingBoxChanged) }
+                launch { viewModel.inputData.collect(::onInputDataChanged) }
             }
         }
+    }
+
+    private fun onInputDataChanged(inputData: InputDataUi) {
+        onGroundTruthBoundingBoxChanged(inputData.groundTruthBoundingBox)
+        onPredictedBoundingBoxChanged(inputData.predictedBoundingBox)
     }
 
     private fun onGroundTruthBoundingBoxChanged(box: BoundingBoxUi) {

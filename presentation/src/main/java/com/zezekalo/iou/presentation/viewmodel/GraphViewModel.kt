@@ -2,7 +2,6 @@ package com.zezekalo.iou.presentation.viewmodel
 
 import com.zezekalo.iou.domain.model.OutputData
 import com.zezekalo.iou.domain.usecase.GetIntersectionOverUnionUseCase
-import com.zezekalo.iou.presentation.model.BoundingBoxUi
 import com.zezekalo.iou.presentation.model.InputDataUi
 import com.zezekalo.iou.presentation.model.toDomain
 import com.zezekalo.iou.presentation.viewmodel.base.BaseViewModel
@@ -28,31 +27,24 @@ class GraphViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UiState>(UiState.Clear)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    private val _inputGroundTruthBoundingBox = MutableStateFlow(BoundingBoxUi.EMPTY)
-    val inputGroundTruthBoundingBox: StateFlow<BoundingBoxUi> = _inputGroundTruthBoundingBox.asStateFlow()
-
-    private val _inputPredictedBoundingBox = MutableStateFlow(BoundingBoxUi.EMPTY)
-    val inputPredictedBoundingBox: StateFlow<BoundingBoxUi> = _inputPredictedBoundingBox.asStateFlow()
+    private val _inputDataUi = MutableStateFlow(InputDataUi.INITIAL)
+    val inputData: StateFlow<InputDataUi> = _inputDataUi.asStateFlow()
 
     fun clearData() {
         setInputData(InputDataUi.INITIAL)
         updateUiState(UiState.Clear)
     }
 
-    fun getInputData(): InputDataUi =
-        InputDataUi(
-            groundTruthBoundingBox = inputGroundTruthBoundingBox.value,
-            predictedBoundingBox = inputPredictedBoundingBox.value
-        )
+    fun getInputData(): InputDataUi = inputData.value
 
-    fun setInputData(inputData: InputDataUi) {
-        _inputGroundTruthBoundingBox.update { inputData.groundTruthBoundingBox }
-        _inputPredictedBoundingBox.update { inputData.predictedBoundingBox }
+    fun setInputData(inputDataUi: InputDataUi) {
+        _inputDataUi.value = inputDataUi
+        calculateIntersectionOverUnion(inputDataUi)
     }
 
-    fun calculateIntersectionOverUnion() {
+    private fun calculateIntersectionOverUnion(inputDataUi: InputDataUi) {
         scope.launch {
-            val inputData = getInputData().toDomain()
+            val inputData = inputDataUi.toDomain()
             useCase(inputData)
                 .onFailure { updateUiState(UiState.Error(it)) }
                 .onSuccess { updateUiState(UiState.Success(it)) }

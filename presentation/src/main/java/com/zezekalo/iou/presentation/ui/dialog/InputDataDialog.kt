@@ -3,7 +3,9 @@ package com.zezekalo.iou.presentation.ui.dialog
 import android.os.Bundle
 import android.text.InputFilter
 import android.view.inputmethod.EditorInfo
+import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -57,7 +59,7 @@ class InputDataDialog: BaseDialog<DialogInputDataBinding, InputDataViewModel>() 
             inputGroundTruthBoxCoordinatesLayout.boxBottomInput.nextFocusForwardId = inputPredictedBoxCoordinatesLayout.boxLeftInput.id
             inputPredictedBoxCoordinatesLayout.boxBottomInput.imeOptions = EditorInfo.IME_ACTION_DONE
 
-            inputGroundTruthBoxCoordinatesLayout.boxBottomInput.setOnEditorActionListener { view, actionId, event ->
+            inputGroundTruthBoxCoordinatesLayout.boxBottomInput.setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_NULL) {
                     inputPredictedBoxCoordinatesLayout.boxLeftInput.requestFocus()
                     return@setOnEditorActionListener true
@@ -141,6 +143,7 @@ class InputDataDialog: BaseDialog<DialogInputDataBinding, InputDataViewModel>() 
                 launch { viewModel.predictedBottomError.collect {
                     onGeneralErrorGot(requireBinding().inputPredictedBoxCoordinatesLayout.boxBottomContainer, it)
                 }}
+                launch { viewModel.validatedInputData.collect(::onValidatedInputDataReceived) }
             }
         }
     }
@@ -169,5 +172,18 @@ class InputDataDialog: BaseDialog<DialogInputDataBinding, InputDataViewModel>() 
 
     private fun onGeneralErrorGot(layout: TextInputLayout, exception: CustomException?) {
         layout.error = if (exception != null) mapper.map(exception) else String.EMPTY
+    }
+
+    private fun onValidatedInputDataReceived(inputData: InputDataUi?) {
+        inputData?.let {
+            setFragmentResult(REQUEST_KEY, bundleOf(INPUT_DATA to it))
+            dismiss()
+        }
+    }
+
+    companion object {
+
+        const val INPUT_DATA = "input_data"
+        const val REQUEST_KEY = "request_key"
     }
 }
