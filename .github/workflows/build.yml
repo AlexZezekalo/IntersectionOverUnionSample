@@ -47,20 +47,36 @@ jobs:
           gradlePath: app/build.gradle.kts
           versionCode: '${{github.run_number}}'
           versionName: 1.0.0
+
+      - name: Restore keystore.jks
+        run: echo "${{secrets.KEYSTORE}}" | base64 -d > "${{ secrets.KEYSTORE_PATH }}"
+
+      - name: Generate keystore.properties
+        run: |
+          cat <<EOF > keystore.properties
+          storePassword:${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword:${{ secrets.APP_NAME_KEY_PASSWORD }}
+          keyAlias:${{ secrets.APP_NAME_KEY }}
+          storeFile:${{ secrets.KEYSTORE_PATH }}
+          EOF
+
       - name: Build prodRelease
-        run: ./gradlew bundleRelease
-      - name: Sign AAb
-        id: sign
-        uses: r0adkll/sign-android-release@v1
-        with:
-          releaseDirectory: app/build/outputs/bundle/release
-          signingKeyBase64: '${{ secrets.KEYSTORE }}'
-          alias: '${{ secrets.APP_NAME_KEY }}'
-          keyStorePassword: '${{ secrets.KEYSTORE_PASSWORD }}'
-          keyPassword: '${{ secrets.APP_NAME_KEY_PASSWORD }}'
+        run: ./gradlew
+          -PKEYSTORE_FILE="${{ secrets.KEYSTORE_PATH }}"
+          -PKEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}
+          -PSIGNING_KEY_ALIAS=${{ secrets.APP_NAME_KEY }}
+          -PSIGNING_KEY_PASSWORD=${{ secrets.APP_NAME_KEY_PASSWORD }}
+          app:bundleRelease
+
       - name: Upload app bundle as artifact
         uses: actions/upload-artifact@v2
         with:
           name: app-bundle
           path: app/build/outputs/bundle/release/app-release.aab
       - run: 'echo Build status report=${{ job.status }}'
+      - name: Upload Reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: Test-Reports
+          path: app/build/reports
+        if: always()
