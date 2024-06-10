@@ -85,7 +85,7 @@ jobs:
           EOF
 
       - name: Build prodRelease
-        run: ./gradlew app:bundleRelease --debug
+        run: ./gradlew assembleRelease
 
       - name: Upload app bundle as artifact
         uses: actions/upload-artifact@v2
