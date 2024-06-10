@@ -20,6 +20,21 @@ jobs:
         uses: android-actions/setup-android@v2
       - name: Grand execute permissions to gradlew
         run: chmod +x gradlew
+      - name: Restore keystore.jks
+        run: |
+          echo ${{secrets.KEYSTORE}} > keystore_base64.txt
+          mkdir ${{secrets.KEYSTORE_DIR}}
+          base64 -d  keystore_base64.txt > "${{ secrets.KEYSTORE_DIR }}/${{ secrets.KEYSTORE_FILE_NAME }}"
+
+      - name: Generate keystore.properties
+        run: |
+          cat <<EOF > keystore.properties
+          storePassword:${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword:${{ secrets.ALIAS_PASSWORD }}
+          keyAlias:${{ secrets.ALIAS_NAME }}
+          storeFile:"..${{ secrets.KEYSTORE_DIR }}/${{ secrets.KEYSTORE_FILE_NAME }}"
+          EOF
+
       - name: Lint
         run: ./gradlew lintDebug
       # Execute unit tests
