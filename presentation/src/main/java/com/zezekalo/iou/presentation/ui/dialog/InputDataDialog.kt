@@ -20,6 +20,7 @@ import com.zezekalo.iou.presentation.model.InputDataUi
 import com.zezekalo.iou.presentation.ui.base.BaseDialog
 import com.zezekalo.iou.presentation.ui.util.MinMaxIntentFilter
 import com.zezekalo.iou.presentation.ui.util.extensions.EMPTY
+import com.zezekalo.iou.presentation.ui.util.extensions.hideKeyboard
 import com.zezekalo.iou.presentation.ui.util.mapper.ThrowableToErrorMessageMapper
 import com.zezekalo.iou.presentation.viewmodel.InputDataViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,11 +37,16 @@ class InputDataDialog: BaseDialog<DialogInputDataBinding, InputDataViewModel>() 
     @Inject lateinit var mapper: ThrowableToErrorMessageMapper
 
     override fun onViewBound(binding: DialogInputDataBinding, savedInstanceState: Bundle?) {
-        viewModel.setInputData(args.inputData)
-
+        setInitValues(args.inputData, binding)
         setTitles(binding)
         setupInputFields(binding)
         setupListeners(binding)
+    }
+
+    private fun setInitValues(inputData: InputDataUi, binding: DialogInputDataBinding) {
+        viewModel.setInputData(inputData)
+        initBoundingBoxInput(inputData.groundTruthBoundingBox, binding.inputGroundTruthBoxCoordinatesLayout)
+        initBoundingBoxInput(inputData.predictedBoundingBox, binding.inputPredictedBoxCoordinatesLayout)
     }
 
     private fun setTitles(binding: DialogInputDataBinding) {
@@ -105,8 +111,15 @@ class InputDataDialog: BaseDialog<DialogInputDataBinding, InputDataViewModel>() 
                 viewModel.processPredictedBottomInput(it)
             }
 
-            closeButton.setOnClickListener { dismiss() }
-            clearButton.setOnClickListener { viewModel.setInputData(InputDataUi.INITIAL) }
+            closeButton.setOnClickListener {
+                hideKeyboard()
+                dismiss()
+            }
+            clearButton.setOnClickListener {
+                viewModel.setInputData(InputDataUi.INITIAL)
+                initBoundingBoxInput(BoundingBoxUi.EMPTY, inputGroundTruthBoxCoordinatesLayout)
+                initBoundingBoxInput(BoundingBoxUi.EMPTY, inputPredictedBoxCoordinatesLayout)
+            }
             applyButton.setOnClickListener { viewModel.validateInput() }
         }
     }
@@ -115,9 +128,6 @@ class InputDataDialog: BaseDialog<DialogInputDataBinding, InputDataViewModel>() 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { viewModel.inputError.collect(::onGeneralErrorGot) }
-
-                launch { viewModel.inputGroundTruthBoundingBox.collect(::onGroundTruthBoxChanged) }
-                launch { viewModel.inputPredictedBoundingBox.collect(::onPredictedBoxChanged) }
 
                 launch { viewModel.groundTruthLeftError.collect {
                     onGeneralErrorGot(requireBinding().inputGroundTruthBoxCoordinatesLayout.boxLeftContainer, it)
@@ -152,21 +162,24 @@ class InputDataDialog: BaseDialog<DialogInputDataBinding, InputDataViewModel>() 
         requireBinding().applyButton.isEnabled = !hasGeneralError
     }
 
-    private fun onGroundTruthBoxChanged(box: BoundingBoxUi) {
-        requireBinding().inputGroundTruthBoxCoordinatesLayout.run {
-            boxLeftInput.setText(box.left.toString())
-            boxTopInput.setText(box.top.toString())
-            boxRightInput.setText(box.right.toString())
-            boxBottomInput.setText(box.bottom.toString())
-        }
-    }
-
-    private fun onPredictedBoxChanged(box: BoundingBoxUi) {
-        requireBinding().inputPredictedBoxCoordinatesLayout.run {
-            boxLeftInput.setText(box.left.toString())
-            boxTopInput.setText(box.top.toString())
-            boxRightInput.setText(box.right.toString())
-            boxBottomInput.setText(box.bottom.toString())
+    private fun initBoundingBoxInput(
+        box: BoundingBoxUi,
+        boundingBoxInputLayoutBinding: BoundingBoxInputLayoutBinding
+    ) {
+        if (box != BoundingBoxUi.EMPTY) {
+            boundingBoxInputLayoutBinding.run {
+                boxLeftInput.setText(box.left.toString())
+                boxTopInput.setText(box.top.toString())
+                boxRightInput.setText(box.right.toString())
+                boxBottomInput.setText(box.bottom.toString())
+            }
+        } else {
+            boundingBoxInputLayoutBinding.run {
+                boxLeftInput.setText(String.EMPTY)
+                boxTopInput.setText(String.EMPTY)
+                boxRightInput.setText(String.EMPTY)
+                boxBottomInput.setText(String.EMPTY)
+            }
         }
     }
 
@@ -177,6 +190,7 @@ class InputDataDialog: BaseDialog<DialogInputDataBinding, InputDataViewModel>() 
     private fun onValidatedInputDataReceived(inputData: InputDataUi?) {
         inputData?.let {
             setFragmentResult(REQUEST_KEY, bundleOf(INPUT_DATA to it))
+            hideKeyboard()
             dismiss()
         }
     }
