@@ -68,29 +68,22 @@ jobs:
           versionCode: ${{github.run_number}}
           versionName: 1.0.0
 
-      - name: Restore keystore.jks
-        run: |
-          echo ${{secrets.KEYSTORE}} > keystore_base64.txt
-          mkdir ${{secrets.KEYSTORE_DIR}}
-          base64 -d  keystore_base64.txt > "${{ secrets.KEYSTORE_DIR }}/${{ secrets.KEYSTORE_FILE_NAME }}"
-
-      - name: Generate keystore.properties
-        run: |
-          cat <<EOF > keystore.properties
-          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
-          keyPassword=${{ secrets.ALIAS_PASSWORD }}
-          keyAlias=${{ secrets.ALIAS_NAME }}
-          storeFile=..${{ secrets.KEYSTORE_DIR }}/${{ secrets.KEYSTORE_FILE_NAME }}
-          EOF
-
       - name: Build prodRelease
         run: ./gradlew assembleRelease
 
-      - name: Upload app bundle as artifact
-        uses: actions/upload-artifact@v2
+      - name: Sign Release
+        uses: r0adkll/sign-android-release@v1
         with:
-          name: app-bundle
-          path: app/build/outputs/bundle/release/app-release.aab
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.KEYSTORE }}
+          alias: ${{ secrets.ALIAS_NAME }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ALIAS_PASSWORD }}
+      - name: Upload apk release as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-apk
+          path: app/build/outputs/apk/release/app-release.apk
       - run: 'echo Build status report=${{ job.status }}'
       - name: Upload Reports
         uses: actions/upload-artifact@v2
