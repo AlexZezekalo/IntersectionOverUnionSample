@@ -46,14 +46,25 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        val javaVersion = libs.versions.jvm.target.version.get()
+        sourceCompatibility = JavaVersion.toVersion(javaVersion)
+        targetCompatibility = JavaVersion.toVersion(javaVersion)
     }
     kotlinOptions {
         jvmTarget = libs.versions.jvm.target.version.get()
     }
     buildFeatures {
         buildConfig = true
+    }
+    testOptions.unitTests {
+        isReturnDefaultValues = true
+        all { tests ->
+            tests.testLogging {
+                exceptionFormat = TestExceptionFormat.FULL
+                events("skipped", "passed", "failed")
+                showStandardStreams = true
+            }
+        }
     }
 }
 
@@ -74,11 +85,4 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-}
-tasks.withType<Test> {
-    testLogging {
-        exceptionFormat = TestExceptionFormat.FULL
-        events("started", "skipped", "passed", "failed")
-        showStandardStreams = true
-    }
 }
