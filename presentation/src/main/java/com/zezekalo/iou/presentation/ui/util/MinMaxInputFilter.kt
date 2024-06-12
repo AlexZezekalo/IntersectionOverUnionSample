@@ -3,7 +3,7 @@ package com.zezekalo.iou.presentation.ui.util
 import android.text.InputFilter
 import android.text.Spanned
 
-class MinMaxIntentFilter(
+class MinMaxInputFilter(
     private val min: Int,
     private val max: Int,
 ): InputFilter {

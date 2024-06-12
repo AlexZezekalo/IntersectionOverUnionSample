@@ -1,7 +1,7 @@
 package com.zezekalo.iou.di
 
 import android.content.Context
-import com.zezekalo.iou.presentation.ui.util.MinMaxIntentFilter
+import com.zezekalo.iou.presentation.ui.util.MinMaxInputFilter
 import com.zezekalo.iou.presentation.ui.util.mapper.ThrowableToErrorMessageMapper
 import dagger.Module
 import dagger.Provides
@@ -18,7 +18,7 @@ class PresentationModule {
         ThrowableToErrorMessageMapper(context.resources)
 
     @Provides
-    fun provideMinMaxInputFilter(): MinMaxIntentFilter = MinMaxIntentFilter(MIN_INPUT_VALUE, MAX_INPUT_VALUE)
+    fun provideMinMaxInputFilter(): MinMaxInputFilter = MinMaxInputFilter(MIN_INPUT_VALUE, MAX_INPUT_VALUE)
 
     companion object {
         const val MIN_INPUT_VALUE: Int = 0

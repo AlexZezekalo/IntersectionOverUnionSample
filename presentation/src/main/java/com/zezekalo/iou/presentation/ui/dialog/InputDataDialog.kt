@@ -18,7 +18,7 @@ import com.zezekalo.iou.presentation.databinding.DialogInputDataBinding
 import com.zezekalo.iou.presentation.model.BoundingBoxUi
 import com.zezekalo.iou.presentation.model.InputDataUi
 import com.zezekalo.iou.presentation.ui.base.BaseDialog
-import com.zezekalo.iou.presentation.ui.util.MinMaxIntentFilter
+import com.zezekalo.iou.presentation.ui.util.MinMaxInputFilter
 import com.zezekalo.iou.presentation.ui.util.extensions.EMPTY
 import com.zezekalo.iou.presentation.ui.util.extensions.hideKeyboard
 import com.zezekalo.iou.presentation.ui.util.mapper.ThrowableToErrorMessageMapper
@@ -32,7 +32,7 @@ class InputDataDialog: BaseDialog<DialogInputDataBinding, InputDataViewModel>() 
 
     private val args: InputDataDialogArgs by navArgs()
 
-    @Inject lateinit var inputFilter: MinMaxIntentFilter
+    @Inject lateinit var inputFilter: MinMaxInputFilter
 
     @Inject lateinit var mapper: ThrowableToErrorMessageMapper
 

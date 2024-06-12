@@ -1,9 +1,11 @@
 name: Run Unit Test on demand
 'on':
   workflow_dispatch: null
+  pull_request:
+    branches: [main, develop]
 jobs:
   test:
-    name: Unit tests
+    name: Run tests
     runs-on: ubuntu-latest
     steps:
       - name: Fetch Sources
@@ -14,30 +16,15 @@ jobs:
           distribution: temurin
           java-version: 17
           cache: gradle
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
       - name: Grand execute permissions to gradlew
         run: chmod +x gradlew
-      - name: Restore keystore.jks
-        run: |
-          echo ${{secrets.KEYSTORE}} > keystore_base64.txt
-          mkdir ${{secrets.KEYSTORE_DIR}}
-          base64 -d  keystore_base64.txt > "${{ secrets.KEYSTORE_DIR }}/${{ secrets.KEYSTORE_FILE_NAME }}"
-
-      - name: Generate keystore.properties
-        run: |
-          cat <<EOF > keystore.properties
-          storePassword:${{ secrets.KEYSTORE_PASSWORD }}
-          keyPassword:${{ secrets.ALIAS_PASSWORD }}
-          keyAlias:${{ secrets.ALIAS_NAME }}
-          storeFile:'..${{ secrets.KEYSTORE_DIR }}/${{ secrets.KEYSTORE_FILE_NAME }}'
-          EOF
 
       - name: Lint
-        run: ./gradlew lintRelease
-      # Execute unit tests
+        run: ./gradlew lintDebug
+
       - name: Unit Test
-        run: ./gradlew testDebugUnitTest
+        run: ./gradlew testDebug
+
       - name: Android Test Report
         uses: asadmansr/android-test-report-action@v1.2.0
         if: ${{ always() }} # IMPORTANT: run Android Test Report regardless
