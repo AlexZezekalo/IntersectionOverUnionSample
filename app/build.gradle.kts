@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import java.io.FileInputStream
 import java.util.*
 
@@ -73,4 +74,11 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+}
+tasks.withType<Test> {
+    testLogging {
+        exceptionFormat = TestExceptionFormat.FULL
+        events("started", "skipped", "passed", "failed")
+        showStandardStreams = true
+    }
 }
