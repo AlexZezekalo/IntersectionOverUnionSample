@@ -6,8 +6,7 @@ import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
 @HiltAndroidApp
-class IouApp: Application() {
-
+class IouApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
@@ -15,7 +14,6 @@ class IouApp: Application() {
     }
 
     companion object {
-
         internal const val GLOBAL_TAG = "IouAppTag"
     }
 }

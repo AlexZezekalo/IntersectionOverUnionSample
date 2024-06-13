@@ -12,10 +12,10 @@ import dagger.hilt.android.qualifiers.ActivityContext
 @InstallIn(ActivityComponent::class)
 @Module
 class PresentationModule {
-
     @Provides
-    fun provideThrowableToErrorMessageMapper(@ActivityContext context: Context): ThrowableToErrorMessageMapper =
-        ThrowableToErrorMessageMapper(context.resources)
+    fun provideThrowableToErrorMessageMapper(
+        @ActivityContext context: Context,
+    ): ThrowableToErrorMessageMapper = ThrowableToErrorMessageMapper(context.resources)
 
     @Provides
     fun provideMinMaxInputFilter(): MinMaxInputFilter = MinMaxInputFilter(MIN_INPUT_VALUE, MAX_INPUT_VALUE)

@@ -4,8 +4,12 @@ import com.zezekalo.iou.IouApp.Companion.GLOBAL_TAG
 import timber.log.Timber
 
 class CustomDebugTree : Timber.DebugTree() {
-
-    override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+    override fun log(
+        priority: Int,
+        tag: String?,
+        message: String,
+        t: Throwable?,
+    ) {
         super.log(priority, "$GLOBAL_TAG: $tag", message, t)
     }
 

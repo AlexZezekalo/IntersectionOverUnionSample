@@ -74,7 +74,9 @@ fun <C : Any> KClass<*>.getFunFromGenericClassOrNull(
  * throw [NoSuchElementException]
  */
 @CheckResult
-fun <C : Any> KClass<*>.getGenericClass(@IntRange(from = 0) genericPosition: Int): KClass<C> {
+fun <C : Any> KClass<*>.getGenericClass(
+    @IntRange(from = 0) genericPosition: Int,
+): KClass<C> {
     val result = getGenericClassOrNull<C>(genericPosition)
 
     if (result == null) {
@@ -118,29 +120,23 @@ fun <C : Any> KClass<*>.getGenericClassOrNull(
 
 @CheckResult
 @Suppress("UNCHECKED_CAST")
-inline fun <reified T : Any> KClass<out Any>.getFirstPropertyByType(
-    accessToPrivate: Boolean = false,
-): KProperty1<Any, T?> {
+inline fun <reified T : Any> KClass<out Any>.getFirstPropertyByType(accessToPrivate: Boolean = false): KProperty1<Any, T?> {
     val property = this.memberProperties.first { it.returnType.classifier == T::class }
     property.isAccessible = accessToPrivate
     return property as KProperty1<Any, T?>
 }
 
 @CheckResult
-inline fun <reified T : Any> KClass<out Any>.getFirstMutablePropertyByType(
-    accessToPrivate: Boolean = false,
-): KMutableProperty1<Any, T?> =
+inline fun <reified T : Any> KClass<out Any>.getFirstMutablePropertyByType(accessToPrivate: Boolean = false): KMutableProperty1<Any, T?> =
     this.getFirstPropertyByType<T>(accessToPrivate) as KMutableProperty1<Any, T?>
 
 @CheckResult
 @Suppress("UNCHECKED_CAST")
-inline fun <reified T : Any> KClass<out Any>.getFirstPropertyByTypeNonNull(
-    accessToPrivate: Boolean = false,
-): KProperty1<Any, T> = this.getFirstPropertyByType<T>(accessToPrivate) as KProperty1<Any, T>
+inline fun <reified T : Any> KClass<out Any>.getFirstPropertyByTypeNonNull(accessToPrivate: Boolean = false): KProperty1<Any, T> =
+    this.getFirstPropertyByType<T>(accessToPrivate) as KProperty1<Any, T>
 
 @CheckResult
 @Suppress("UNCHECKED_CAST")
 inline fun <reified T : Any> KClass<out Any>.getFirstMutablePropertyByTypeNonNull(
     accessToPrivate: Boolean = false,
-): KMutableProperty1<Any, T> =
-    this.getFirstPropertyByType<T>(accessToPrivate) as KMutableProperty1<Any, T>
+): KMutableProperty1<Any, T> = this.getFirstPropertyByType<T>(accessToPrivate) as KMutableProperty1<Any, T>

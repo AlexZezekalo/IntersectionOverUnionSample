@@ -12,11 +12,9 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 @Module
 interface DataModule {
-
     @Binds
     fun bindComputationRepository(computationRepositoryImpl: ComputationRepositoryImpl): ComputationRepository
 
     @Binds
     fun bindValidator(validator: ValidatorImpl): Validator
-
 }

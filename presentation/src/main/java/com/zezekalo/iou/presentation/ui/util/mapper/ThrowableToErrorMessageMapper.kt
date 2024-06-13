@@ -8,7 +8,6 @@ import com.zezekalo.iou.domain.model.exception.RightCoordinateNotValidException
 import com.zezekalo.iou.presentation.R
 
 class ThrowableToErrorMessageMapper(val resources: Resources) {
-
     fun map(throwable: Throwable): String {
         return when (throwable) {
             is CustomException -> getFromCustomException(throwable)

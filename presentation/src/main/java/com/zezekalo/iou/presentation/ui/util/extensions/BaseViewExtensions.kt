@@ -24,26 +24,29 @@ fun <VB : ViewBinding> BaseView<VB, *>.inflateBinding(
 fun <VB : ViewBinding> BaseView<VB, *>.inflateBinding(
     layoutInflater: LayoutInflater,
     parent: ViewGroup?,
-    attachToRoot: Boolean = false
+    attachToRoot: Boolean = false,
 ): VB =
     this::class
         .getFunFromGenericClass<VB>(0, true, ::isInflateWithParentFun)
         .call(layoutInflater, parent, attachToRoot) as VB
 
-
-@CheckResult private fun isInflateWithoutParentFun(function: KFunction<*>): Boolean = function.run {
-    parameters.size == 1 &&
+@CheckResult private fun isInflateWithoutParentFun(function: KFunction<*>): Boolean =
+    function.run {
+        parameters.size == 1 &&
             parameters[0].type.classifier == LayoutInflater::class
-}
+    }
 
-@CheckResult private fun isInflateWithParentFun(function: KFunction<*>): Boolean = function.run {
-    parameters.size == 3 &&
+@CheckResult private fun isInflateWithParentFun(function: KFunction<*>): Boolean =
+    function.run {
+        parameters.size == 3 &&
             parameters[0].type.classifier == LayoutInflater::class &&
             parameters[1].type.classifier == ViewGroup::class &&
             parameters[2].type.classifier == Boolean::class
-}
+    }
 
-@CheckResult fun <VM, SO> SO.createViewModel(position: Int = 1): VM
+@CheckResult fun <VM, SO> SO.createViewModel(
+    position: Int = 1,
+): VM
         where VM : BaseViewModel,
               SO : BaseView<*, VM>,
               SO : ViewModelStoreOwner =

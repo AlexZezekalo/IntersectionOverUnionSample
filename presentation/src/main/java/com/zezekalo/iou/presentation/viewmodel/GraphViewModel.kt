@@ -15,43 +15,46 @@ import javax.inject.Inject
 
 sealed class UiState {
     data object Clear : UiState()
+
     data class Error(val throwable: Throwable) : UiState()
+
     data class Success(val data: OutputData) : UiState()
 }
 
 @HiltViewModel
-class GraphViewModel @Inject constructor(
-    private val useCase: GetIntersectionOverUnionUseCase
-) : BaseViewModel() {
+class GraphViewModel
+    @Inject
+    constructor(
+        private val useCase: GetIntersectionOverUnionUseCase,
+    ) : BaseViewModel() {
+        private val _uiState = MutableStateFlow<UiState>(UiState.Clear)
+        val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    private val _uiState = MutableStateFlow<UiState>(UiState.Clear)
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+        private val _inputDataUi = MutableStateFlow(InputDataUi.INITIAL)
+        val inputDataUi: StateFlow<InputDataUi> = _inputDataUi.asStateFlow()
 
-    private val _inputDataUi = MutableStateFlow(InputDataUi.INITIAL)
-    val inputData: StateFlow<InputDataUi> = _inputDataUi.asStateFlow()
+        fun clearData() {
+            setInputData(InputDataUi.INITIAL)
+            updateUiState(UiState.Clear)
+        }
 
-    fun clearData() {
-        setInputData(InputDataUi.INITIAL)
-        updateUiState(UiState.Clear)
-    }
+        fun getInputData(): InputDataUi = inputDataUi.value
 
-    fun getInputData(): InputDataUi = inputData.value
+        fun setInputData(inputDataUi: InputDataUi) {
+            _inputDataUi.value = inputDataUi
+            calculateIntersectionOverUnion(inputDataUi)
+        }
 
-    fun setInputData(inputDataUi: InputDataUi) {
-        _inputDataUi.value = inputDataUi
-        calculateIntersectionOverUnion(inputDataUi)
-    }
+        private fun calculateIntersectionOverUnion(inputDataUi: InputDataUi) {
+            scope.launch {
+                val inputData = inputDataUi.toDomain()
+                useCase(inputData)
+                    .onFailure { updateUiState(UiState.Error(it)) }
+                    .onSuccess { updateUiState(UiState.Success(it)) }
+            }
+        }
 
-    private fun calculateIntersectionOverUnion(inputDataUi: InputDataUi) {
-        scope.launch {
-            val inputData = inputDataUi.toDomain()
-            useCase(inputData)
-                .onFailure { updateUiState(UiState.Error(it)) }
-                .onSuccess { updateUiState(UiState.Success(it)) }
+        private fun updateUiState(uiState: UiState) {
+            _uiState.update { uiState }
         }
     }
-
-    private fun updateUiState(uiState: UiState) {
-        _uiState.update { uiState }
-    }
-}

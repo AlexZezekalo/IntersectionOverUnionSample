@@ -5,12 +5,14 @@ import androidx.annotation.CheckResult
 import androidx.lifecycle.ViewModel
 import androidx.viewbinding.ViewBinding
 
-interface BaseView<VB: ViewBinding, VM: ViewModel> {
-
+interface BaseView<VB : ViewBinding, VM : ViewModel> {
     @CheckResult
     fun requireBinding(): VB
 
-    fun onViewBound(binding: VB, savedInstanceState: Bundle?)
+    fun onViewBound(
+        binding: VB,
+        savedInstanceState: Bundle?,
+    )
 
     fun listenViewModel(viewModel: VM)
 }

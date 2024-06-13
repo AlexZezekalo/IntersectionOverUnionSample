@@ -15,9 +15,8 @@ import com.zezekalo.iou.presentation.ui.util.extensions.createViewModel
 import com.zezekalo.iou.presentation.ui.util.extensions.inflateBinding
 import com.zezekalo.iou.presentation.viewmodel.base.BaseViewModel
 
-abstract class BaseDialog<VB: ViewBinding, VM: BaseViewModel>: DialogFragment(), BaseView<VB, VM> {
-
-    protected val  viewModel: VM by lazy (::createViewModel)
+abstract class BaseDialog<VB : ViewBinding, VM : BaseViewModel> : DialogFragment(), BaseView<VB, VM> {
+    protected val viewModel: VM by lazy(::createViewModel)
 
     private var binding: VB? = null
 
@@ -36,11 +35,11 @@ abstract class BaseDialog<VB: ViewBinding, VM: BaseViewModel>: DialogFragment(),
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
-        object : AppCompatDialog(requireContext(), theme){
+        object : AppCompatDialog(requireContext(), theme) {
             @Deprecated("Deprecated in Java")
             @SuppressLint("MissingSuperCall")
             override fun onBackPressed() {
-                //No action, close only due to button click
+                // No action, close only due to button click
             }
         }.apply {
             setCanceledOnTouchOutside(isCanceledOnTouchOutside)
@@ -50,11 +49,15 @@ abstract class BaseDialog<VB: ViewBinding, VM: BaseViewModel>: DialogFragment(),
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View = inflateBinding(inflater, container, false)
-        .also(::binding::set)
-        .root
+    ): View =
+        inflateBinding(inflater, container, false)
+            .also(::binding::set)
+            .root
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         onViewBound(requireBinding(), savedInstanceState)
         listenViewModel(viewModel)

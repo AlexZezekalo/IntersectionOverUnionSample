@@ -5,5 +5,4 @@ fun Int.showBoxCoordinate(description: String): String {
     return "$description $value"
 }
 
-fun Float?.showIoU(description: String): String =
-    if (this != null) "$description ${"""%.3f""".format(this)}" else description
+fun Float?.showIoU(description: String): String = if (this != null) "$description ${"""%.3f""".format(this)}" else description

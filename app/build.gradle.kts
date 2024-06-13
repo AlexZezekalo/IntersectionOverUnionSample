@@ -1,6 +1,7 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import java.io.FileInputStream
-import java.util.*
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -82,11 +83,20 @@ dependencies {
     implementation(libs.material)
     api(libs.timber)
     implementation(libs.hilt.android)
-    kapt (libs.hilt.compiler)
+    kapt(libs.hilt.compiler)
 
     testApi(project(":domain"))
     testApi(libs.timber)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+}
+
+configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+    android.set(true)
+    reporters {
+        reporter(ReporterType.HTML)
+        reporter(ReporterType.PLAIN)
+        reporter(ReporterType.CHECKSTYLE)
+    }
 }

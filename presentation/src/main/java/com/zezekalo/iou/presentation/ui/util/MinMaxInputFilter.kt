@@ -6,8 +6,7 @@ import android.text.Spanned
 class MinMaxInputFilter(
     private val min: Int,
     private val max: Int,
-): InputFilter {
-
+) : InputFilter {
     override fun filter(
         source: CharSequence?,
         start: Int,
@@ -30,7 +29,11 @@ class MinMaxInputFilter(
         return ""
     }
 
-    private fun isInRange(min: Int, max: Int, value: Int): Boolean {
+    private fun isInRange(
+        min: Int,
+        max: Int,
+        value: Int,
+    ): Boolean {
         return if (max > min) value in min..max else value in max..min
     }
 }

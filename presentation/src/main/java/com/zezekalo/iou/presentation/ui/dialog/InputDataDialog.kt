@@ -28,22 +28,27 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class InputDataDialog: BaseDialog<DialogInputDataBinding, InputDataViewModel>() {
-
+class InputDataDialog : BaseDialog<DialogInputDataBinding, InputDataViewModel>() {
     private val args: InputDataDialogArgs by navArgs()
 
     @Inject lateinit var inputFilter: MinMaxInputFilter
 
     @Inject lateinit var mapper: ThrowableToErrorMessageMapper
 
-    override fun onViewBound(binding: DialogInputDataBinding, savedInstanceState: Bundle?) {
+    override fun onViewBound(
+        binding: DialogInputDataBinding,
+        savedInstanceState: Bundle?,
+    ) {
         setInitValues(args.inputData, binding)
         setTitles(binding)
         setupInputFields(binding)
         setupListeners(binding)
     }
 
-    private fun setInitValues(inputData: InputDataUi, binding: DialogInputDataBinding) {
+    private fun setInitValues(
+        inputData: InputDataUi,
+        binding: DialogInputDataBinding,
+    ) {
         viewModel.setInputData(inputData)
         initBoundingBoxInput(inputData.groundTruthBoundingBox, binding.inputGroundTruthBoxCoordinatesLayout)
         initBoundingBoxInput(inputData.predictedBoundingBox, binding.inputPredictedBoxCoordinatesLayout)
@@ -75,7 +80,10 @@ class InputDataDialog: BaseDialog<DialogInputDataBinding, InputDataViewModel>() 
         }
     }
 
-    private fun setInputFilter(binding: BoundingBoxInputLayoutBinding, arrayOfFilters: Array<InputFilter>) {
+    private fun setInputFilter(
+        binding: BoundingBoxInputLayoutBinding,
+        arrayOfFilters: Array<InputFilter>,
+    ) {
         with(binding) {
             boxLeftInput.filters = arrayOfFilters
             boxTopInput.filters = arrayOfFilters
@@ -129,30 +137,46 @@ class InputDataDialog: BaseDialog<DialogInputDataBinding, InputDataViewModel>() 
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { viewModel.inputError.collect(::onGeneralErrorGot) }
 
-                launch { viewModel.groundTruthLeftError.collect {
-                    onGeneralErrorGot(requireBinding().inputGroundTruthBoxCoordinatesLayout.boxLeftContainer, it)
-                }}
-                launch { viewModel.groundTruthTopError.collect {
-                    onGeneralErrorGot(requireBinding().inputGroundTruthBoxCoordinatesLayout.boxTopContainer, it)
-                }}
-                launch { viewModel.groundTruthRightError.collect {
-                    onGeneralErrorGot(requireBinding().inputGroundTruthBoxCoordinatesLayout.boxRightContainer, it)
-                }}
-                launch { viewModel.groundTruthBottomError.collect {
-                    onGeneralErrorGot(requireBinding().inputGroundTruthBoxCoordinatesLayout.boxBottomContainer, it)
-                }}
-                launch { viewModel.predictedLeftError.collect {
+                launch {
+                    viewModel.groundTruthLeftError.collect {
+                        onGeneralErrorGot(requireBinding().inputGroundTruthBoxCoordinatesLayout.boxLeftContainer, it)
+                    }
+                }
+                launch {
+                    viewModel.groundTruthTopError.collect {
+                        onGeneralErrorGot(requireBinding().inputGroundTruthBoxCoordinatesLayout.boxTopContainer, it)
+                    }
+                }
+                launch {
+                    viewModel.groundTruthRightError.collect {
+                        onGeneralErrorGot(requireBinding().inputGroundTruthBoxCoordinatesLayout.boxRightContainer, it)
+                    }
+                }
+                launch {
+                    viewModel.groundTruthBottomError.collect {
+                        onGeneralErrorGot(requireBinding().inputGroundTruthBoxCoordinatesLayout.boxBottomContainer, it)
+                    }
+                }
+                launch {
+                    viewModel.predictedLeftError.collect {
                         onGeneralErrorGot(requireBinding().inputPredictedBoxCoordinatesLayout.boxLeftContainer, it)
-                }}
-                launch { viewModel.predictedTopError.collect {
-                    onGeneralErrorGot(requireBinding().inputPredictedBoxCoordinatesLayout.boxTopContainer, it)
-                }}
-                launch { viewModel.predictedRightError.collect {
-                    onGeneralErrorGot(requireBinding().inputPredictedBoxCoordinatesLayout.boxRightContainer, it)
-                }}
-                launch { viewModel.predictedBottomError.collect {
-                    onGeneralErrorGot(requireBinding().inputPredictedBoxCoordinatesLayout.boxBottomContainer, it)
-                }}
+                    }
+                }
+                launch {
+                    viewModel.predictedTopError.collect {
+                        onGeneralErrorGot(requireBinding().inputPredictedBoxCoordinatesLayout.boxTopContainer, it)
+                    }
+                }
+                launch {
+                    viewModel.predictedRightError.collect {
+                        onGeneralErrorGot(requireBinding().inputPredictedBoxCoordinatesLayout.boxRightContainer, it)
+                    }
+                }
+                launch {
+                    viewModel.predictedBottomError.collect {
+                        onGeneralErrorGot(requireBinding().inputPredictedBoxCoordinatesLayout.boxBottomContainer, it)
+                    }
+                }
                 launch { viewModel.validatedInputData.collect(::onValidatedInputDataReceived) }
             }
         }
@@ -164,7 +188,7 @@ class InputDataDialog: BaseDialog<DialogInputDataBinding, InputDataViewModel>() 
 
     private fun initBoundingBoxInput(
         box: BoundingBoxUi,
-        boundingBoxInputLayoutBinding: BoundingBoxInputLayoutBinding
+        boundingBoxInputLayoutBinding: BoundingBoxInputLayoutBinding,
     ) {
         if (box != BoundingBoxUi.EMPTY) {
             boundingBoxInputLayoutBinding.run {
@@ -183,7 +207,10 @@ class InputDataDialog: BaseDialog<DialogInputDataBinding, InputDataViewModel>() 
         }
     }
 
-    private fun onGeneralErrorGot(layout: TextInputLayout, exception: CustomException?) {
+    private fun onGeneralErrorGot(
+        layout: TextInputLayout,
+        exception: CustomException?,
+    ) {
         layout.error = if (exception != null) mapper.map(exception) else String.EMPTY
     }
 
@@ -196,7 +223,6 @@ class InputDataDialog: BaseDialog<DialogInputDataBinding, InputDataViewModel>() 
     }
 
     companion object {
-
         const val INPUT_DATA = "input_data"
         const val REQUEST_KEY = "request_key"
     }

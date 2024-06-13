@@ -10,7 +10,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import com.zezekalo.iou.domain.model.*
+import com.zezekalo.iou.domain.model.BoundingBox
+import com.zezekalo.iou.domain.model.GroundTruthBoundingBox
+import com.zezekalo.iou.domain.model.OutputData
+import com.zezekalo.iou.domain.model.PredictedBoundingBox
+import com.zezekalo.iou.domain.model.UnionBox
 import com.zezekalo.iou.presentation.R
 import com.zezekalo.iou.presentation.databinding.BoundingBoxTextLayoutBinding
 import com.zezekalo.iou.presentation.databinding.FragmentGraphBinding
@@ -29,10 +33,12 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class GraphFragment : BaseFragment<FragmentGraphBinding, GraphViewModel>() {
-
     @Inject lateinit var throwableToErrorMessageMapper: ThrowableToErrorMessageMapper
 
-    override fun onViewBound(binding: FragmentGraphBinding, savedInstanceState: Bundle?) {
+    override fun onViewBound(
+        binding: FragmentGraphBinding,
+        savedInstanceState: Bundle?,
+    ) {
         with(binding) {
             groundTruthBoxCoordinatesLayout.boxTitle.text = getString(R.string.ground_truth_title)
             predictedBoxCoordinatesLayout.boxTitle.text = getString(R.string.predicted_title)
@@ -60,6 +66,7 @@ class GraphFragment : BaseFragment<FragmentGraphBinding, GraphViewModel>() {
     private fun setInputDataResultListener() {
         setFragmentResultListener(InputDataDialog.REQUEST_KEY) { _, bundle ->
             clearFragmentResultListener(InputDataDialog.REQUEST_KEY)
+            @Suppress("DEPRECATION")
             val inputData = bundle.getParcelable<InputDataUi>(InputDataDialog.INPUT_DATA)
             inputData?.let { viewModel.setInputData(it) }
         }
@@ -69,7 +76,7 @@ class GraphFragment : BaseFragment<FragmentGraphBinding, GraphViewModel>() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { viewModel.uiState.collect(::onUiStateChange) }
-                launch { viewModel.inputData.collect(::onInputDataChanged) }
+                launch { viewModel.inputDataUi.collect(::onInputDataChanged) }
             }
         }
     }
@@ -87,7 +94,10 @@ class GraphFragment : BaseFragment<FragmentGraphBinding, GraphViewModel>() {
         requireBinding().predictedBoxCoordinatesLayout.also { showBoundingBoxCoordinates(box, it) }
     }
 
-    private fun showBoundingBoxCoordinates(box: BoundingBox, binding: BoundingBoxTextLayoutBinding) {
+    private fun showBoundingBoxCoordinates(
+        box: BoundingBox,
+        binding: BoundingBoxTextLayoutBinding,
+    ) {
         with(binding) {
             boxLeftText.text = box.left.showBoxCoordinate(getString(R.string.left_hint))
             boxTopText.text = box.top.showBoxCoordinate(getString(R.string.top_hint))
@@ -133,7 +143,7 @@ class GraphFragment : BaseFragment<FragmentGraphBinding, GraphViewModel>() {
             customGraphView.setBoxes(
                 groundTruthBoundingBox = groundTruthBoundingBox,
                 predictedBoundingBox = predictedBoundingBox,
-                unionBox = outputData?.unionBox
+                unionBox = outputData?.unionBox,
             )
         }
     }

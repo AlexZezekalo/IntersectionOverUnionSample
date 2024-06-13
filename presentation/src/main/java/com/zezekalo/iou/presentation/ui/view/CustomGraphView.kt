@@ -14,7 +14,6 @@ import com.zezekalo.iou.domain.model.UnionBox
 import com.zezekalo.iou.presentation.R
 
 class CustomGraphView : FrameLayout {
-
     private var textColorInt: Int? = null
     private var textPaint: Paint? = null
 
@@ -63,7 +62,7 @@ class CustomGraphView : FrameLayout {
     fun setBoxes(
         groundTruthBoundingBox: GroundTruthBoundingBox,
         predictedBoundingBox: PredictedBoundingBox,
-        unionBox: UnionBox?
+        unionBox: UnionBox?,
     ) {
         this.groundTruthBoundingBox = groundTruthBoundingBox
         this.predictedBoundingBox = predictedBoundingBox
@@ -71,82 +70,102 @@ class CustomGraphView : FrameLayout {
         invalidate()
     }
 
-    private fun init(attrs: AttributeSet?, defStyle: Int) {
-        val attributes = context.obtainStyledAttributes(
-            attrs, R.styleable.CustomGraphView, defStyle, 0
-        )
+    private fun init(
+        attrs: AttributeSet?,
+        defStyle: Int,
+    ) {
+        val attributes =
+            context.obtainStyledAttributes(
+                attrs,
+                R.styleable.CustomGraphView,
+                defStyle,
+                0,
+            )
         try {
-            axesColorInt = attributes.getColor(
-                R.styleable.CustomGraphView_axesColor,
-                ContextCompat.getColor(context, R.color.def_axes_color)
-            ).also {
-                axesPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                    color = it
-                    style = Paint.Style.FILL
-                    strokeWidth = 8f
+            axesColorInt =
+                attributes.getColor(
+                    R.styleable.CustomGraphView_axesColor,
+                    ContextCompat.getColor(context, R.color.def_axes_color),
+                ).also {
+                    axesPaint =
+                        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                            color = it
+                            style = Paint.Style.FILL
+                            strokeWidth = 8f
+                        }
                 }
-            }
 
-            graphPaperColorInt = attributes.getColor(
-                R.styleable.CustomGraphView_graphColor,
-                ContextCompat.getColor(context, R.color.def_graph_color)
-            ).also {
-                graphPaperPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                    color = it
-                    style = Paint.Style.FILL_AND_STROKE
-                    strokeWidth = 2f
+            graphPaperColorInt =
+                attributes.getColor(
+                    R.styleable.CustomGraphView_graphColor,
+                    ContextCompat.getColor(context, R.color.def_graph_color),
+                ).also {
+                    graphPaperPaint =
+                        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                            color = it
+                            style = Paint.Style.FILL_AND_STROKE
+                            strokeWidth = 2f
+                        }
                 }
-            }
 
-            groundTruthColorInt = attributes.getColor(
-                R.styleable.CustomGraphView_groundTruthColor,
-                ContextCompat.getColor(context, R.color.def_ground_truth_color)
-            ).also {
-                groundTruthPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                    color = it
-                    style = Paint.Style.FILL
+            groundTruthColorInt =
+                attributes.getColor(
+                    R.styleable.CustomGraphView_groundTruthColor,
+                    ContextCompat.getColor(context, R.color.def_ground_truth_color),
+                ).also {
+                    groundTruthPaint =
+                        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                            color = it
+                            style = Paint.Style.FILL
+                        }
                 }
-            }
 
-            predictedColorInt = attributes.getColor(
-                R.styleable.CustomGraphView_predictedColor,
-                ContextCompat.getColor(context, R.color.def_predicted_color)
-            ).also {
-                predictedPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                    color = it
-                    style = Paint.Style.FILL
+            predictedColorInt =
+                attributes.getColor(
+                    R.styleable.CustomGraphView_predictedColor,
+                    ContextCompat.getColor(context, R.color.def_predicted_color),
+                ).also {
+                    predictedPaint =
+                        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                            color = it
+                            style = Paint.Style.FILL
+                        }
                 }
-            }
 
-            unionColorInt = attributes.getColor(
-                R.styleable.CustomGraphView_unionColor,
-                ContextCompat.getColor(context, R.color.def_union_color)
-            ).also {
-                unionPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                    color = it
-                    style = Paint.Style.FILL
+            unionColorInt =
+                attributes.getColor(
+                    R.styleable.CustomGraphView_unionColor,
+                    ContextCompat.getColor(context, R.color.def_union_color),
+                ).also {
+                    unionPaint =
+                        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                            color = it
+                            style = Paint.Style.FILL
+                        }
                 }
-            }
 
-            axisTextSize = attributes.getDimensionPixelSize(
-                R.styleable.CustomGraphView_axisTextSize,
-                resources.getDimensionPixelSize(R.dimen.def_axis_text_size))
+            axisTextSize =
+                attributes.getDimensionPixelSize(
+                    R.styleable.CustomGraphView_axisTextSize,
+                    resources.getDimensionPixelSize(R.dimen.def_axis_text_size),
+                )
 
-            textColorInt = attributes.getColor(
-                R.styleable.CustomGraphView_axesTextColor,
-                ContextCompat.getColor(context, R.color.def_text_color)
-            ).also {
-            textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                    color = it
-                    style = Paint.Style.FILL
-                    textAlign = Paint.Align.CENTER
-                    textSize = axisTextSize!!.toFloat()
+            textColorInt =
+                attributes.getColor(
+                    R.styleable.CustomGraphView_axesTextColor,
+                    ContextCompat.getColor(context, R.color.def_text_color),
+                ).also {
+                    textPaint =
+                        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                            color = it
+                            style = Paint.Style.FILL
+                            textAlign = Paint.Align.CENTER
+                            textSize = axisTextSize!!.toFloat()
+                        }
                 }
-            }
         } finally {
             attributes.recycle()
         }
-
     }
 
     private fun init() {
@@ -155,13 +174,16 @@ class CustomGraphView : FrameLayout {
 
         chunksInRow = DEFAULT_CHUNK_IN_A_ROWS
 
-        chunkX = viewWidth/(chunksInRow + 2).toFloat()
-        chunkY = viewHeight/(chunksInRow + 2).toFloat()
+        chunkX = viewWidth / (chunksInRow + 2).toFloat()
+        chunkY = viewHeight / (chunksInRow + 2).toFloat()
 
         isInit = true
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    override fun onMeasure(
+        widthMeasureSpec: Int,
+        heightMeasureSpec: Int,
+    ) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         val widthSize = MeasureSpec.getSize(widthMeasureSpec)
         val heightSize = MeasureSpec.getSize(heightMeasureSpec)
@@ -194,14 +216,20 @@ class CustomGraphView : FrameLayout {
         }
     }
 
-    private fun drawAxis(canvas: Canvas, paint: Paint) {
+    private fun drawAxis(
+        canvas: Canvas,
+        paint: Paint,
+    ) {
         // x-axis
         canvas.drawLine(chunkX, chunkY, viewWidth - chunkX, chunkY, paint)
         // y-axis
         canvas.drawLine(chunkX, chunkY, chunkX, viewHeight - chunkY, paint)
     }
 
-    private fun drawGraphPaper(canvas: Canvas, paint: Paint) {
+    private fun drawGraphPaper(
+        canvas: Canvas,
+        paint: Paint,
+    ) {
         var cx = chunkX * 2f
         var cy = chunkY
         // vertical
@@ -218,7 +246,10 @@ class CustomGraphView : FrameLayout {
         }
     }
 
-    private fun drawTextOnXaxis(canvas: Canvas, paint: Paint) {
+    private fun drawTextOnXaxis(
+        canvas: Canvas,
+        paint: Paint,
+    ) {
         var cx = chunkX
         val cy = chunkY * 0.75f
         // horizontal
@@ -228,7 +259,10 @@ class CustomGraphView : FrameLayout {
         }
     }
 
-    private fun drawTextOnYaxis(canvas: Canvas, paint: Paint) {
+    private fun drawTextOnYaxis(
+        canvas: Canvas,
+        paint: Paint,
+    ) {
         val cx = chunkX * 0.5f
         var cy = chunkY * 1.1f
         // vertical
@@ -238,20 +272,24 @@ class CustomGraphView : FrameLayout {
         }
     }
 
-    private fun drawBoundingBox(canvas: Canvas, paint: Paint, box: BoundingBox?) {
+    private fun drawBoundingBox(
+        canvas: Canvas,
+        paint: Paint,
+        box: BoundingBox?,
+    ) {
         box?.let {
-            val rect = RectF(
-                (1 + box.left) * chunkX,
-                (1 + box.top) * chunkY,
-                (1 + box.right) * chunkX,
-                (1 + box.bottom) * chunkY
-            )
+            val rect =
+                RectF(
+                    (1 + box.left) * chunkX,
+                    (1 + box.top) * chunkY,
+                    (1 + box.right) * chunkX,
+                    (1 + box.bottom) * chunkY,
+                )
             canvas.drawRect(rect, paint)
         }
     }
 
     companion object {
-
         private const val DEFAULT_CHUNK_IN_A_ROWS = 16
     }
 }

@@ -8,4 +8,9 @@ plugins {
     alias(libs.plugins.kotlin.kapt) apply(false)
     alias(libs.plugins.androidx.navigation.safeargs) apply(false)
     alias(libs.plugins.kotlin.parcelize) apply(false)
+    alias(libs.plugins.ktlint) apply(false)
+}
+
+subprojects {
+    apply(plugin = rootProject.libs.plugins.ktlint.get().pluginId)
 }

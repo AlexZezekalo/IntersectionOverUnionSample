@@ -16,15 +16,15 @@ data class GroundTruthBoundingBox(
     override val top: Int,
     override val right: Int,
     override val bottom: Int,
-): BoundingBox {
-
+) : BoundingBox {
     companion object {
-        val INIT = GroundTruthBoundingBox(
-            left = BoundingBox.INIT_VALUE,
-            top = BoundingBox.INIT_VALUE,
-            right = BoundingBox.INIT_VALUE,
-            bottom = BoundingBox.INIT_VALUE,
-        )
+        val INIT =
+            GroundTruthBoundingBox(
+                left = BoundingBox.INIT_VALUE,
+                top = BoundingBox.INIT_VALUE,
+                right = BoundingBox.INIT_VALUE,
+                bottom = BoundingBox.INIT_VALUE,
+            )
     }
 }
 
@@ -33,14 +33,15 @@ data class PredictedBoundingBox(
     override val top: Int,
     override val right: Int,
     override val bottom: Int,
-): BoundingBox {
+) : BoundingBox {
     companion object {
-        val INIT = PredictedBoundingBox(
-            left = BoundingBox.INIT_VALUE,
-            top = BoundingBox.INIT_VALUE,
-            right = BoundingBox.INIT_VALUE,
-            bottom = BoundingBox.INIT_VALUE,
-        )
+        val INIT =
+            PredictedBoundingBox(
+                left = BoundingBox.INIT_VALUE,
+                top = BoundingBox.INIT_VALUE,
+                right = BoundingBox.INIT_VALUE,
+                bottom = BoundingBox.INIT_VALUE,
+            )
     }
 }
 
@@ -49,8 +50,7 @@ data class UnionBox(
     override val top: Int,
     override val right: Int,
     override val bottom: Int,
-): BoundingBox {
-
+) : BoundingBox {
     companion object {
         val NOT_OVERLAP = UnionBox(0, 0, 0, 0)
     }

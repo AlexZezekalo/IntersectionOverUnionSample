@@ -5,10 +5,10 @@ import com.zezekalo.iou.domain.model.exception.ValidationResult
 import com.zezekalo.iou.domain.validation.Validator
 import javax.inject.Inject
 
-class GetValidationResultUseCase @Inject constructor(
-    private val validator: Validator,
-) {
-
-    suspend operator fun invoke(boundingBox: BoundingBox): ValidationResult =
-        validator.validateBoundingBoxCoordinates(boundingBox)
-}
+class GetValidationResultUseCase
+    @Inject
+    constructor(
+        private val validator: Validator,
+    ) {
+        suspend operator fun invoke(boundingBox: BoundingBox): ValidationResult = validator.validateBoundingBoxCoordinates(boundingBox)
+    }

@@ -11,19 +11,18 @@ data class InputDataUi(
     val groundTruthBoundingBox: BoundingBoxUi,
     val predictedBoundingBox: BoundingBoxUi,
 ) : Parcelable {
-
     companion object {
-
-        val INITIAL = InputDataUi(
-            groundTruthBoundingBox = BoundingBoxUi.EMPTY,
-            predictedBoundingBox = BoundingBoxUi.EMPTY
-        )
+        val INITIAL =
+            InputDataUi(
+                groundTruthBoundingBox = BoundingBoxUi.EMPTY,
+                predictedBoundingBox = BoundingBoxUi.EMPTY,
+            )
     }
 }
 
 fun InputDataUi.toDomain(): InputData {
     return InputData(
         groundTruthBoundingBox = groundTruthBoundingBox.toDomain(GroundTruthBoundingBox::class),
-        predictedBoundingBox = predictedBoundingBox.toDomain(PredictedBoundingBox::class)
+        predictedBoundingBox = predictedBoundingBox.toDomain(PredictedBoundingBox::class),
     )
 }
