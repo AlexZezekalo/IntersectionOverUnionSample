@@ -23,7 +23,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run Ktlint
-        run: ./gradlew ktlintDebugCheck
+        run: ./gradlew ktlintDebugSourceSetCheck ktlintTestDebugSourceSetCheck
 
       - name: Test
         run: ./gradlew testDebug

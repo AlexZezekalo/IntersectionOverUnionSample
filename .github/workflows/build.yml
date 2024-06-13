@@ -24,7 +24,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run Ktlint
-        run: ./gradlew ktlintDebugCheck
+        run: ./gradlew ktlintDebugSourceSetCheck ktlintTestDebugSourceSetCheck
 
       - name: Test
         run: ./gradlew testDebug
@@ -83,15 +83,10 @@ jobs:
         with:
           name: app-apk
           path: app/build/outputs/apk/release/app-release.apk
-
       - run: 'echo Build status report=${{ job.status }}'
-
       - name: Upload Reports
         uses: actions/upload-artifact@v2
         with:
           name: Test-Reports
           path: app/build/reports
         if: ${{ always() }}
-
-  deploy:
-    # add later
