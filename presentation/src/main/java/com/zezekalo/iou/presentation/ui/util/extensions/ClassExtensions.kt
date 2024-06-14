@@ -55,13 +55,15 @@ fun <C : Any> KClass<*>.getFunFromGenericClassOrNull(
     getGenericClass<C>(genericPosition)
         .let { if (staticFun) it.staticFunctions else it.functions }
         .firstOrNull(conditionForSearchFun) as KFunction<C>?
-        ?: superclasses.asSequence().mapNotNull {
-            it.getFunFromGenericClassOrNull<C>(
-                genericPosition = genericPosition,
-                staticFun = staticFun,
-                conditionForSearchFun = conditionForSearchFun,
-            )
-        }.firstOrNull()
+        ?: superclasses
+            .asSequence()
+            .mapNotNull {
+                it.getFunFromGenericClassOrNull<C>(
+                    genericPosition = genericPosition,
+                    staticFun = staticFun,
+                    conditionForSearchFun = conditionForSearchFun,
+                )
+            }.firstOrNull()
 
 /**
  * Get instance of [KClass] for generic type [C] at the given genericPosition.

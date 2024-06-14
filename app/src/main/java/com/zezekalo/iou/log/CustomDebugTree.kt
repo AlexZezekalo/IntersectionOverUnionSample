@@ -13,7 +13,6 @@ class CustomDebugTree : Timber.DebugTree() {
         super.log(priority, "$GLOBAL_TAG: $tag", message, t)
     }
 
-    override fun createStackElementTag(element: StackTraceElement): String {
-        return String.format("%s: %s:", super.createStackElementTag(element), element.methodName)
-    }
+    override fun createStackElementTag(element: StackTraceElement): String =
+        String.format("%s: %s:", super.createStackElementTag(element), element.methodName)
 }

@@ -9,10 +9,16 @@ plugins {
 
 android {
     namespace = "com.zezekalo.iou.presentation"
-    compileSdk = libs.versions.compile.sdk.version.get().toInt()
+    compileSdk =
+        libs.versions.compile.sdk.version
+            .get()
+            .toInt()
 
     defaultConfig {
-        minSdk = libs.versions.min.sdk.version.get().toInt()
+        minSdk =
+            libs.versions.min.sdk.version
+                .get()
+                .toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -23,7 +29,9 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = libs.versions.jvm.target.version.get()
+        jvmTarget =
+            libs.versions.jvm.target.version
+                .get()
     }
     buildFeatures {
         viewBinding = true

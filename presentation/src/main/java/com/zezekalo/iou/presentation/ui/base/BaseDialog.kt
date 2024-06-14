@@ -15,7 +15,9 @@ import com.zezekalo.iou.presentation.ui.util.extensions.createViewModel
 import com.zezekalo.iou.presentation.ui.util.extensions.inflateBinding
 import com.zezekalo.iou.presentation.viewmodel.base.BaseViewModel
 
-abstract class BaseDialog<VB : ViewBinding, VM : BaseViewModel> : DialogFragment(), BaseView<VB, VM> {
+abstract class BaseDialog<VB : ViewBinding, VM : BaseViewModel> :
+    DialogFragment(),
+    BaseView<VB, VM> {
     protected val viewModel: VM by lazy(::createViewModel)
 
     private var binding: VB? = null

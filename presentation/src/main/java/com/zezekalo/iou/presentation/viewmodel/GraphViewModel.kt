@@ -16,9 +16,13 @@ import javax.inject.Inject
 sealed class UiState {
     data object Clear : UiState()
 
-    data class Error(val throwable: Throwable) : UiState()
+    data class Error(
+        val throwable: Throwable,
+    ) : UiState()
 
-    data class Success(val data: OutputData) : UiState()
+    data class Success(
+        val data: OutputData,
+    ) : UiState()
 }
 
 @HiltViewModel

@@ -33,7 +33,5 @@ class MinMaxInputFilter(
         min: Int,
         max: Int,
         value: Int,
-    ): Boolean {
-        return if (max > min) value in min..max else value in max..min
-    }
+    ): Boolean = if (max > min) value in min..max else value in max..min
 }

@@ -20,9 +20,8 @@ data class InputDataUi(
     }
 }
 
-fun InputDataUi.toDomain(): InputData {
-    return InputData(
+fun InputDataUi.toDomain(): InputData =
+    InputData(
         groundTruthBoundingBox = groundTruthBoundingBox.toDomain(GroundTruthBoundingBox::class),
         predictedBoundingBox = predictedBoundingBox.toDomain(PredictedBoundingBox::class),
     )
-}

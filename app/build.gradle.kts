@@ -1,5 +1,4 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -18,14 +17,28 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.zezekalo.iou"
-    compileSdk = libs.versions.compile.sdk.version.get().toInt()
+    compileSdk =
+        libs.versions.compile.sdk.version
+            .get()
+            .toInt()
 
     defaultConfig {
         applicationId = "com.zezekalo.iou"
-        minSdk = libs.versions.min.sdk.version.get().toInt()
-        targetSdk = libs.versions.target.sdk.version.get().toInt()
-        versionCode = libs.versions.version.code.get().toInt()
-        versionName = libs.versions.version.name.get()
+        minSdk =
+            libs.versions.min.sdk.version
+                .get()
+                .toInt()
+        targetSdk =
+            libs.versions.target.sdk.version
+                .get()
+                .toInt()
+        versionCode =
+            libs.versions.version.code
+                .get()
+                .toInt()
+        versionName =
+            libs.versions.version.name
+                .get()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -51,12 +64,16 @@ android {
         }
     }
     compileOptions {
-        val javaVersion = libs.versions.jvm.target.version.get()
+        val javaVersion =
+            libs.versions.jvm.target.version
+                .get()
         sourceCompatibility = JavaVersion.toVersion(javaVersion)
         targetCompatibility = JavaVersion.toVersion(javaVersion)
     }
     kotlinOptions {
-        jvmTarget = libs.versions.jvm.target.version.get()
+        jvmTarget =
+            libs.versions.jvm.target.version
+                .get()
     }
     buildFeatures {
         buildConfig = true
@@ -90,13 +107,4 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-}
-
-configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-    android.set(true)
-    reporters {
-        reporter(ReporterType.HTML)
-        reporter(ReporterType.PLAIN)
-        reporter(ReporterType.CHECKSTYLE)
-    }
 }

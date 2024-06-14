@@ -11,12 +11,11 @@ class GetIntersectionOverUnionUseCase
     constructor(
         private val computationRepository: ComputationRepository,
     ) {
-        suspend operator fun invoke(inputData: InputData): Result<OutputData> {
-            return try {
+        suspend operator fun invoke(inputData: InputData): Result<OutputData> =
+            try {
                 val outputData = computationRepository.computeIntersectionOverUnion(inputData)
                 Result.success(outputData)
             } catch (e: CustomException) {
                 Result.failure(e)
             }
-        }
     }

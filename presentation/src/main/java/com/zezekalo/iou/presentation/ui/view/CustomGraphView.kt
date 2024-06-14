@@ -83,66 +83,71 @@ class CustomGraphView : FrameLayout {
             )
         try {
             axesColorInt =
-                attributes.getColor(
-                    R.styleable.CustomGraphView_axesColor,
-                    ContextCompat.getColor(context, R.color.def_axes_color),
-                ).also {
-                    axesPaint =
-                        Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                            color = it
-                            style = Paint.Style.FILL
-                            strokeWidth = 8f
-                        }
-                }
+                attributes
+                    .getColor(
+                        R.styleable.CustomGraphView_axesColor,
+                        ContextCompat.getColor(context, R.color.def_axes_color),
+                    ).also {
+                        axesPaint =
+                            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                                color = it
+                                style = Paint.Style.FILL
+                                strokeWidth = 8f
+                            }
+                    }
 
             graphPaperColorInt =
-                attributes.getColor(
-                    R.styleable.CustomGraphView_graphColor,
-                    ContextCompat.getColor(context, R.color.def_graph_color),
-                ).also {
-                    graphPaperPaint =
-                        Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                            color = it
-                            style = Paint.Style.FILL_AND_STROKE
-                            strokeWidth = 2f
-                        }
-                }
+                attributes
+                    .getColor(
+                        R.styleable.CustomGraphView_graphColor,
+                        ContextCompat.getColor(context, R.color.def_graph_color),
+                    ).also {
+                        graphPaperPaint =
+                            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                                color = it
+                                style = Paint.Style.FILL_AND_STROKE
+                                strokeWidth = 2f
+                            }
+                    }
 
             groundTruthColorInt =
-                attributes.getColor(
-                    R.styleable.CustomGraphView_groundTruthColor,
-                    ContextCompat.getColor(context, R.color.def_ground_truth_color),
-                ).also {
-                    groundTruthPaint =
-                        Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                            color = it
-                            style = Paint.Style.FILL
-                        }
-                }
+                attributes
+                    .getColor(
+                        R.styleable.CustomGraphView_groundTruthColor,
+                        ContextCompat.getColor(context, R.color.def_ground_truth_color),
+                    ).also {
+                        groundTruthPaint =
+                            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                                color = it
+                                style = Paint.Style.FILL
+                            }
+                    }
 
             predictedColorInt =
-                attributes.getColor(
-                    R.styleable.CustomGraphView_predictedColor,
-                    ContextCompat.getColor(context, R.color.def_predicted_color),
-                ).also {
-                    predictedPaint =
-                        Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                            color = it
-                            style = Paint.Style.FILL
-                        }
-                }
+                attributes
+                    .getColor(
+                        R.styleable.CustomGraphView_predictedColor,
+                        ContextCompat.getColor(context, R.color.def_predicted_color),
+                    ).also {
+                        predictedPaint =
+                            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                                color = it
+                                style = Paint.Style.FILL
+                            }
+                    }
 
             unionColorInt =
-                attributes.getColor(
-                    R.styleable.CustomGraphView_unionColor,
-                    ContextCompat.getColor(context, R.color.def_union_color),
-                ).also {
-                    unionPaint =
-                        Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                            color = it
-                            style = Paint.Style.FILL
-                        }
-                }
+                attributes
+                    .getColor(
+                        R.styleable.CustomGraphView_unionColor,
+                        ContextCompat.getColor(context, R.color.def_union_color),
+                    ).also {
+                        unionPaint =
+                            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                                color = it
+                                style = Paint.Style.FILL
+                            }
+                    }
 
             axisTextSize =
                 attributes.getDimensionPixelSize(
@@ -151,18 +156,19 @@ class CustomGraphView : FrameLayout {
                 )
 
             textColorInt =
-                attributes.getColor(
-                    R.styleable.CustomGraphView_axesTextColor,
-                    ContextCompat.getColor(context, R.color.def_text_color),
-                ).also {
-                    textPaint =
-                        Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                            color = it
-                            style = Paint.Style.FILL
-                            textAlign = Paint.Align.CENTER
-                            textSize = axisTextSize!!.toFloat()
-                        }
-                }
+                attributes
+                    .getColor(
+                        R.styleable.CustomGraphView_axesTextColor,
+                        ContextCompat.getColor(context, R.color.def_text_color),
+                    ).also {
+                        textPaint =
+                            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                                color = it
+                                style = Paint.Style.FILL
+                                textAlign = Paint.Align.CENTER
+                                textSize = axisTextSize!!.toFloat()
+                            }
+                    }
         } finally {
             attributes.recycle()
         }

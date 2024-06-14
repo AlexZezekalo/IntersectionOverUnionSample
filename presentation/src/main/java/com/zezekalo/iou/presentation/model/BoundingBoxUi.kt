@@ -11,7 +11,8 @@ data class BoundingBoxUi(
     override val top: Int,
     override val right: Int,
     override val bottom: Int,
-) : BoundingBox, Parcelable {
+) : BoundingBox,
+    Parcelable {
     companion object {
         private const val INIT_VALUE: Int = 0
         val EMPTY = BoundingBoxUi(left = INIT_VALUE, top = INIT_VALUE, right = INIT_VALUE, bottom = INIT_VALUE)
