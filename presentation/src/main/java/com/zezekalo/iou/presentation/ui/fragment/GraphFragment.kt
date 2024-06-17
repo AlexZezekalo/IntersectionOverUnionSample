@@ -140,11 +140,14 @@ class GraphFragment : BaseFragment<FragmentGraphBinding, GraphViewModel>() {
         requireBinding().run {
             val groundTruthBoundingBox = outputData?.inputData?.groundTruthBoundingBox ?: GroundTruthBoundingBox.INIT
             val predictedBoundingBox = outputData?.inputData?.predictedBoundingBox ?: PredictedBoundingBox.INIT
-            customGraphView.setBoxes(
-                groundTruthBoundingBox = groundTruthBoundingBox,
-                predictedBoundingBox = predictedBoundingBox,
-                unionBox = outputData?.unionBox,
-            )
+            groundTruthBox.setBox(groundTruthBoundingBox)
+            predictedBox.setBox(predictedBoundingBox)
+            customCoordinatePlateView.setUnionBox(outputData?.unionBox)
+//            customGraphView.setBoxes(
+//                groundTruthBoundingBox = groundTruthBoundingBox,
+//                predictedBoundingBox = predictedBoundingBox,
+//                unionBox = outputData?.unionBox,
+//            )
         }
     }
 

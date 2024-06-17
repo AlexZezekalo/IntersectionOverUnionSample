@@ -12,7 +12,7 @@
     <color name="def_text_color">#232323</color>
     <color name="def_axes_color">#121212</color>
     <color name="def_graph_color">#434343</color>
-    <color name="def_ground_truth_color">#00FF00</color>
-    <color name="def_predicted_color">#880000FF</color>
+    <color name="def_ground_truth_color">#6600FF00</color>
+    <color name="def_predicted_color">#660000FF</color>
     <color name="def_union_color">#FF0000</color>
 </resources>
