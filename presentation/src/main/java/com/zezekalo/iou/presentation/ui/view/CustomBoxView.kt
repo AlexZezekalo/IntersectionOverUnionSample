@@ -1,14 +1,19 @@
 package com.zezekalo.iou.presentation.ui.view
 
+import android.content.ClipData
+import android.content.ClipDescription
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.RectF
+import android.graphics.Point
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnLongClickListener
 import androidx.annotation.StyleableRes
 import androidx.core.content.ContextCompat
-import com.zezekalo.iou.domain.model.BoundingBox
 import com.zezekalo.iou.presentation.R
 import timber.log.Timber
 
@@ -16,18 +21,9 @@ class CustomBoxView : View {
     private var boxColorInt: Int? = null
     private var boxPaint: Paint? = null
 
-    private var type: BoxType = BoxType.GROUND_TRUTH
+    var type: BoxType = BoxType.GROUND_TRUTH
 
-    private var chunksInRow: Int = 0
-    private var viewWidth: Int = 0
-    private var viewHeight: Int = 0
-
-    private var chunkX: Float = 0f
-    private var chunkY: Float = 0f
-
-    private var isInit: Boolean = false
-
-    private var boundingBox: BoundingBox? = null
+    private var lastTouch: Point? = null
 
     constructor(context: Context) : super(context) {
         init(null, 0)
@@ -41,13 +37,7 @@ class CustomBoxView : View {
         init(attrs, defStyle)
     }
 
-    fun setBox(
-        boundingBox: BoundingBox,
-    ) {
-        this.boundingBox = boundingBox
-        visibility = VISIBLE
-        invalidate()
-    }
+    fun getBoxColor(): Int? = boxColorInt
 
     private fun init(
         attrs: AttributeSet?,
@@ -64,17 +54,19 @@ class CustomBoxView : View {
             type = BoxType.entries.toTypedArray()[attributes.getInt(R.styleable.CustomBoxView_type, 0)]
             Timber.i("type: $type")
             @StyleableRes
-            val styleableResId: Int = if (type == BoxType.GROUND_TRUTH) {
-                R.styleable.CustomBoxView_groundTruthColor
-            } else {
-                R.styleable.CustomBoxView_predictedColor
-            }
+            val styleableResId: Int =
+                if (type == BoxType.GROUND_TRUTH) {
+                    R.styleable.CustomBoxView_groundTruthColor
+                } else {
+                    R.styleable.CustomBoxView_predictedColor
+                }
 
-            val defColorInt: Int = if (type == BoxType.GROUND_TRUTH) {
-                R.color.def_ground_truth_color
-            } else {
-                R.color.def_predicted_color
-            }
+            val defColorInt: Int =
+                if (type == BoxType.GROUND_TRUTH) {
+                    R.color.def_ground_truth_color
+                } else {
+                    R.color.def_predicted_color
+                }
 
             boxColorInt =
                 attributes
@@ -88,22 +80,11 @@ class CustomBoxView : View {
                                 style = Paint.Style.FILL
                             }
                     }
-
         } finally {
             attributes.recycle()
         }
-    }
-
-    private fun init() {
-        viewWidth = width
-        viewHeight = height
-
-        chunksInRow = DEFAULT_CHUNK_IN_A_ROWS
-
-        chunkX = viewWidth / (chunksInRow + 2).toFloat()
-        chunkY = viewHeight / (chunksInRow + 2).toFloat()
-
-        isInit = true
+        isLongClickable = true
+        setOnLongClickListener(onLongClickListener)
     }
 
     override fun onMeasure(
@@ -113,42 +94,55 @@ class CustomBoxView : View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         val widthSize = MeasureSpec.getSize(widthMeasureSpec)
         val heightSize = MeasureSpec.getSize(heightMeasureSpec)
-
-        val dimen = if (widthSize < heightSize) widthSize else heightSize
-        setMeasuredDimension(dimen, dimen)
-    }
-
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        if (!isInit) init()
-        requireNotNull(boxPaint) { "boundingBoxPaint is null" }.also {
-            drawBoundingBox(canvas, it, boundingBox)
-        }
-    }
-
-    private fun drawBoundingBox(
-        canvas: Canvas,
-        paint: Paint,
-        box: BoundingBox?,
-    ) {
-        box?.let {
-            val rect =
-                RectF(
-                    (1 + box.left) * chunkX,
-                    (1 + box.top) * chunkY,
-                    (1 + box.right) * chunkX,
-                    (1 + box.bottom) * chunkY,
-                )
-            canvas.drawRect(rect, paint)
-        }
+        setMeasuredDimension(widthSize, heightSize)
     }
 
     enum class BoxType {
         GROUND_TRUTH,
-        PREDICTED
+        PREDICTED,
     }
 
-    companion object {
-        private const val DEFAULT_CHUNK_IN_A_ROWS = 16
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        event?.let {
+            lastTouch = Point(it.x.toInt(), it.y.toInt())
+        }
+        return super.onTouchEvent(event)
+    }
+
+    private val onLongClickListener =
+        OnLongClickListener { boxView ->
+            val boxTypeName = type.name
+            val clipDataItem = ClipData.Item(boxTypeName)
+            val clipData = ClipData(boxTypeName, arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN), clipDataItem)
+
+            val dragShadowBuilder = BoxDragShadowBuilder(boxView)
+            boxView.startDragAndDrop(clipData, dragShadowBuilder, boxView, 0)
+            true
+        }
+
+    inner class BoxDragShadowBuilder(
+        view: View,
+    ) : DragShadowBuilder(view) {
+        private val shadow: Drawable? by lazy {
+            (view as CustomBoxView).getBoxColor()?.let { ColorDrawable(it) }
+        }
+
+        override fun onProvideShadowMetrics(
+            size: Point?,
+            touch: Point?,
+        ) {
+            val width = view.width
+            val height = view.height
+
+            shadow?.setBounds(0, 0, width, height)
+
+            size?.set(width, height)
+
+            touch?.set(lastTouch?.x ?: (width / 2), lastTouch?.y ?: (height / 2))
+        }
+
+        override fun onDrawShadow(canvas: Canvas) {
+            shadow?.draw(canvas)
+        }
     }
 }

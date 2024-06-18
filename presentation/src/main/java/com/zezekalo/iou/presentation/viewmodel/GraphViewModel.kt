@@ -1,7 +1,9 @@
 package com.zezekalo.iou.presentation.viewmodel
 
+import androidx.annotation.VisibleForTesting
 import com.zezekalo.iou.domain.model.OutputData
 import com.zezekalo.iou.domain.usecase.GetIntersectionOverUnionUseCase
+import com.zezekalo.iou.presentation.model.BoundingBoxUi
 import com.zezekalo.iou.presentation.model.InputDataUi
 import com.zezekalo.iou.presentation.model.toDomain
 import com.zezekalo.iou.presentation.viewmodel.base.BaseViewModel
@@ -37,6 +39,11 @@ class GraphViewModel
         private val _inputDataUi = MutableStateFlow(InputDataUi.INITIAL)
         val inputDataUi: StateFlow<InputDataUi> = _inputDataUi.asStateFlow()
 
+        init {
+            // For Test purpose only
+            setTestBoxes()
+        }
+
         fun clearData() {
             setInputData(InputDataUi.INITIAL)
             updateUiState(UiState.Clear)
@@ -61,4 +68,15 @@ class GraphViewModel
         private fun updateUiState(uiState: UiState) {
             _uiState.update { uiState }
         }
+
+        @VisibleForTesting
+        private fun setTestBoxes() {
+            calculateIntersectionOverUnion(testInputData)
+        }
     }
+
+private val testInputData =
+    InputDataUi(
+        groundTruthBoundingBox = BoundingBoxUi(left = 3, top = 3, right = 10, bottom = 10),
+        predictedBoundingBox = BoundingBoxUi(left = 7, top = 7, right = 13, bottom = 13),
+    )

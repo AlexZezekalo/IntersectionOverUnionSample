@@ -4,12 +4,18 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
+import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
+import android.view.View
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import com.zezekalo.iou.domain.model.BoundingBox
+import com.zezekalo.iou.domain.model.GroundTruthBoundingBox
+import com.zezekalo.iou.domain.model.PredictedBoundingBox
 import com.zezekalo.iou.domain.model.UnionBox
 import com.zezekalo.iou.presentation.R
+import com.zezekalo.iou.presentation.ui.view.listener.CoordinatePlateDragListener
 
 class CustomCoordinatePlateView : FrameLayout {
     private var textColorInt: Int? = null
@@ -35,6 +41,8 @@ class CustomCoordinatePlateView : FrameLayout {
 
     private var isInit: Boolean = false
 
+    private var groundTruthBoundingBox: GroundTruthBoundingBox? = null
+    private var predictedBoundingBox: PredictedBoundingBox? = null
     private var unionBox: UnionBox? = null
 
     constructor(context: Context) : super(context) {
@@ -49,11 +57,15 @@ class CustomCoordinatePlateView : FrameLayout {
         init(attrs, defStyle)
     }
 
-    fun setUnionBox(
+    fun setBoxes(
+        groundTruthBoundingBox: GroundTruthBoundingBox,
+        predictedBoundingBox: PredictedBoundingBox,
         unionBox: UnionBox?,
     ) {
+        this.groundTruthBoundingBox = groundTruthBoundingBox
+        this.predictedBoundingBox = predictedBoundingBox
         this.unionBox = unionBox
-        invalidate()
+        requestLayout()
     }
 
     private fun init(
@@ -132,6 +144,7 @@ class CustomCoordinatePlateView : FrameLayout {
         } finally {
             attributes.recycle()
         }
+        setOnDragListener(CoordinatePlateDragListener())
     }
 
     private fun init() {
@@ -153,6 +166,9 @@ class CustomCoordinatePlateView : FrameLayout {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         val widthSize = MeasureSpec.getSize(widthMeasureSpec)
         val heightSize = MeasureSpec.getSize(heightMeasureSpec)
+        for (child in children) {
+            measureChild(child, widthMeasureSpec, heightMeasureSpec)
+        }
 
         val dimen = if (widthSize < heightSize) widthSize else heightSize
         setMeasuredDimension(dimen, dimen)
@@ -160,7 +176,6 @@ class CustomCoordinatePlateView : FrameLayout {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        if (!isInit) init()
         requireNotNull(axesPaint) { "axesPaint is null" }.also {
             drawAxis(canvas, it)
         }
@@ -246,6 +261,46 @@ class CustomCoordinatePlateView : FrameLayout {
                     (1 + box.bottom) * chunkY,
                 )
             canvas.drawRect(rect, paint)
+        }
+    }
+
+    override fun onLayout(
+        changed: Boolean,
+        left: Int,
+        top: Int,
+        right: Int,
+        bottom: Int,
+    ) {
+        if (!isInit) init()
+        val children = children
+
+        val childLeft = paddingLeft
+        val childTop = paddingTop
+        val childRight = measuredWidth - paddingRight
+        val childBottom = measuredHeight - paddingBottom
+        val childWidth = childRight - childLeft
+        val childHeight = childBottom - childTop
+
+        for (child in children) {
+            val boxType = (child as CustomBoxView).type
+            val box =
+                if (boxType == CustomBoxView.BoxType.GROUND_TRUTH) {
+                    groundTruthBoundingBox
+                } else {
+                    predictedBoundingBox
+                }
+            if (child.visibility == View.GONE || box == null) continue
+            child.measure(
+                MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY),
+            )
+            child.layout(
+                (1 + box.left) * chunkX.toInt(),
+                (1 + box.top) * chunkY.toInt(),
+                (1 + box.right) * chunkX.toInt(),
+                (1 + box.bottom) * chunkY.toInt(),
+            )
+            child.getBoxColor()?.let { child.background = ColorDrawable(it) }
         }
     }
 
