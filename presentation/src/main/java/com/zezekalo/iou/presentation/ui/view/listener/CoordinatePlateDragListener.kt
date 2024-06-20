@@ -15,11 +15,11 @@ class CoordinatePlateDragListener(
         val draggableItem = dragEvent.localState as CustomBoxView
 
         when (dragEvent.action) {
-            DragEvent.ACTION_DRAG_STARTED -> { }
-            DragEvent.ACTION_DRAG_ENTERED -> { }
-            DragEvent.ACTION_DRAG_LOCATION -> {
+            DragEvent.ACTION_DRAG_STARTED -> {
                 draggableItem.visibility = View.INVISIBLE
             }
+            DragEvent.ACTION_DRAG_ENTERED -> { }
+            DragEvent.ACTION_DRAG_LOCATION -> { }
             DragEvent.ACTION_DRAG_EXITED -> { }
             DragEvent.ACTION_DROP -> {
                 val left = dragEvent.x - draggableItem.width/2

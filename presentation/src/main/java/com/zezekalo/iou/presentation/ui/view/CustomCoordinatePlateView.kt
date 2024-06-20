@@ -270,7 +270,7 @@ class CustomCoordinatePlateView : FrameLayout {
     }
 
     fun updateBoxLocation(type: CustomBoxView.BoxType, leftTopPoint: Point, rightBottom: Point) {
-        val boundingBoxUi = getValidBoxCoordinates(leftTopPoint, rightBottom)
+        val boundingBoxUi = getValidBoundingBox(leftTopPoint, rightBottom)
         if (type == CustomBoxView.BoxType.GROUND_TRUTH) {
             _groundTruthBoundingBoxFlow.tryEmit(boundingBoxUi)
         } else {
@@ -278,7 +278,7 @@ class CustomCoordinatePlateView : FrameLayout {
         }
     }
 
-    private fun getValidBoxCoordinates(leftTopPoint: Point, rightBottomPoint: Point):
+    private fun getValidBoundingBox(leftTopPoint: Point, rightBottomPoint: Point):
             BoundingBoxUi {
         var left: Int = Math.round(leftTopPoint.x/chunkX - 1)
         var top: Int = Math.round(leftTopPoint.y/chunkY - 1)
