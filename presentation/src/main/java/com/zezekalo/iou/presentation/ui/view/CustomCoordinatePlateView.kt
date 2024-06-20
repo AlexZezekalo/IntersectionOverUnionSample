@@ -3,6 +3,7 @@ package com.zezekalo.iou.presentation.ui.view
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Point
 import android.graphics.RectF
 import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
@@ -11,11 +12,12 @@ import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import com.zezekalo.iou.domain.model.BoundingBox
-import com.zezekalo.iou.domain.model.GroundTruthBoundingBox
-import com.zezekalo.iou.domain.model.PredictedBoundingBox
-import com.zezekalo.iou.domain.model.UnionBox
 import com.zezekalo.iou.presentation.R
+import com.zezekalo.iou.presentation.model.BoundingBoxUi
 import com.zezekalo.iou.presentation.ui.view.listener.CoordinatePlateDragListener
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import timber.log.Timber
 
 class CustomCoordinatePlateView : FrameLayout {
     private var textColorInt: Int? = null
@@ -41,9 +43,18 @@ class CustomCoordinatePlateView : FrameLayout {
 
     private var isInit: Boolean = false
 
-    private var groundTruthBoundingBox: GroundTruthBoundingBox? = null
-    private var predictedBoundingBox: PredictedBoundingBox? = null
-    private var unionBox: UnionBox? = null
+    private var groundTruthBoundingBox: BoundingBoxUi? = null
+    private var predictedBoundingBox: BoundingBoxUi? = null
+    private var unionBox: BoundingBoxUi? = null
+
+    private val _groundTruthBoundingBoxFlow = MutableStateFlow<BoundingBoxUi?>(null)
+    val groundTruthBoundingBoxFlow = _groundTruthBoundingBoxFlow.asStateFlow()
+
+    private val _predictedBoundingBoxFlow = MutableStateFlow<BoundingBoxUi?>(null)
+    val predictedBoundingBoxFlow = _predictedBoundingBoxFlow.asStateFlow()
+
+    private val groundTruthBoundingBoxColor: ColorDrawable = ColorDrawable()
+    private val predictedBoundingBoxColor: ColorDrawable = ColorDrawable()
 
     constructor(context: Context) : super(context) {
         init(null, 0)
@@ -58,9 +69,9 @@ class CustomCoordinatePlateView : FrameLayout {
     }
 
     fun setBoxes(
-        groundTruthBoundingBox: GroundTruthBoundingBox,
-        predictedBoundingBox: PredictedBoundingBox,
-        unionBox: UnionBox?,
+        groundTruthBoundingBox: BoundingBoxUi,
+        predictedBoundingBox: BoundingBoxUi,
+        unionBox: BoundingBoxUi?,
     ) {
         this.groundTruthBoundingBox = groundTruthBoundingBox
         this.predictedBoundingBox = predictedBoundingBox
@@ -144,7 +155,6 @@ class CustomCoordinatePlateView : FrameLayout {
         } finally {
             attributes.recycle()
         }
-        setOnDragListener(CoordinatePlateDragListener())
     }
 
     private fun init() {
@@ -283,8 +293,7 @@ class CustomCoordinatePlateView : FrameLayout {
 
         for (child in children) {
             val boxType = (child as CustomBoxView).type
-            val box =
-                if (boxType == CustomBoxView.BoxType.GROUND_TRUTH) {
+            val box = if (boxType == CustomBoxView.BoxType.GROUND_TRUTH) {
                     groundTruthBoundingBox
                 } else {
                     predictedBoundingBox
@@ -300,8 +309,51 @@ class CustomCoordinatePlateView : FrameLayout {
                 (1 + box.right) * chunkX.toInt(),
                 (1 + box.bottom) * chunkY.toInt(),
             )
-            child.getBoxColor()?.let { child.background = ColorDrawable(it) }
+            child.getBoxColor()?.let { color ->
+                val boxColor = if (boxType == CustomBoxView.BoxType.GROUND_TRUTH) {
+                    groundTruthBoundingBoxColor
+                } else {
+                    predictedBoundingBoxColor
+                }
+                child.background = boxColor.also { it.color = color }
+            }
+            Timber.d("onLayout: child ${child.type}; width=${child.measuredWidth}, height=${child.measuredHeight}")
         }
+    }
+
+    fun updateBoxLocation(type: CustomBoxView.BoxType, leftTopPoint: Point, rightBottom: Point) {
+        val left: Int = Math.round(leftTopPoint.x/chunkX - 1)
+        val top: Int = Math.round(leftTopPoint.y/chunkY - 1)
+        val right: Int = Math.round(rightBottom.x/chunkX - 1)
+        val bottom: Int = Math.round(rightBottom.y/chunkY - 1)
+        val boundingBoxUi = BoundingBoxUi(left, top, right, bottom)
+        Timber.e("updateBoxLocation: box: $boundingBoxUi")
+        if (type == CustomBoxView.BoxType.GROUND_TRUTH) {
+            _groundTruthBoundingBoxFlow.tryEmit(boundingBoxUi)
+            setBoxes(
+                groundTruthBoundingBox = boundingBoxUi,
+                predictedBoundingBox = predictedBoundingBox ?: BoundingBoxUi.EMPTY,
+                unionBox = unionBox
+            )
+        } else {
+            _predictedBoundingBoxFlow.tryEmit(boundingBoxUi)
+            setBoxes(
+                groundTruthBoundingBox = groundTruthBoundingBox ?: BoundingBoxUi.EMPTY,
+                predictedBoundingBox = boundingBoxUi,
+                unionBox = unionBox
+            )
+        }
+        requestLayout()
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        setOnDragListener(CoordinatePlateDragListener(this))
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        setOnDragListener(null)
     }
 
     companion object {

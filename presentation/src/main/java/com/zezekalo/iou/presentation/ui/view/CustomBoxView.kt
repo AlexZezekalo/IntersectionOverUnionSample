@@ -9,7 +9,6 @@ import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnLongClickListener
 import androidx.annotation.StyleableRes
@@ -22,8 +21,6 @@ class CustomBoxView : View {
     private var boxPaint: Paint? = null
 
     var type: BoxType = BoxType.GROUND_TRUTH
-
-    private var lastTouch: Point? = null
 
     constructor(context: Context) : super(context) {
         init(null, 0)
@@ -102,13 +99,6 @@ class CustomBoxView : View {
         PREDICTED,
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        event?.let {
-            lastTouch = Point(it.x.toInt(), it.y.toInt())
-        }
-        return super.onTouchEvent(event)
-    }
-
     private val onLongClickListener =
         OnLongClickListener { boxView ->
             val boxTypeName = type.name
@@ -138,7 +128,7 @@ class CustomBoxView : View {
 
             size?.set(width, height)
 
-            touch?.set(lastTouch?.x ?: (width / 2), lastTouch?.y ?: (height / 2))
+            touch?.set(width / 2, height / 2)
         }
 
         override fun onDrawShadow(canvas: Canvas) {
