@@ -49,52 +49,36 @@ class CustomBoxView : View {
         try {
             type = BoxType.entries.toTypedArray()[attributes.getInt(R.styleable.CustomBoxView_type, 0)]
             @StyleableRes
-            val styleableResId: Int =
-                if (type == BoxType.GROUND_TRUTH) {
-                    R.styleable.CustomBoxView_groundTruthColor
-                } else {
-                    R.styleable.CustomBoxView_predictedColor
-                }
-
-            val defColorInt: Int =
-                if (type == BoxType.GROUND_TRUTH) {
-                    R.color.def_ground_truth_color
-                } else {
-                    R.color.def_predicted_color
-                }
-
+            val styleableResId: Int = when (type) {
+                BoxType.GROUND_TRUTH -> R.styleable.CustomBoxView_groundTruthColor
+                BoxType.PREDICTED -> R.styleable.CustomBoxView_predictedColor
+                BoxType.UNION_BOX -> R.styleable.CustomBoxView_unionColor
+            }
+            val defColorInt: Int = when (type) {
+                BoxType.GROUND_TRUTH -> R.color.def_ground_truth_color
+                BoxType.PREDICTED -> R.color.def_predicted_color
+                BoxType.UNION_BOX -> R.color.def_union_color
+            }
             boxColorInt =
-                attributes
-                    .getColor(
-                        styleableResId,
-                        ContextCompat.getColor(context, defColorInt),
-                    ).also {
-                        boxPaint =
-                            Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                                color = it
-                                style = Paint.Style.FILL
-                            }
+                attributes.getColor(styleableResId, ContextCompat.getColor(context, defColorInt))
+                    .also { boxPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+                        .apply {
+                            color = it
+                            style = Paint.Style.FILL
+                        }
                     }
         } finally {
             attributes.recycle()
         }
+        boxColorInt?.let { background = ColorDrawable(it) }
         isLongClickable = true
         setOnLongClickListener(onLongClickListener)
-    }
-
-    override fun onMeasure(
-        widthMeasureSpec: Int,
-        heightMeasureSpec: Int,
-    ) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
-        val heightSize = MeasureSpec.getSize(heightMeasureSpec)
-        setMeasuredDimension(widthSize, heightSize)
     }
 
     enum class BoxType {
         GROUND_TRUTH,
         PREDICTED,
+        UNION_BOX,
     }
 
     private val onLongClickListener =
@@ -108,17 +92,15 @@ class CustomBoxView : View {
             true
         }
 
-    inner class BoxDragShadowBuilder(
-        view: View,
-    ) : DragShadowBuilder(view) {
+    inner class BoxDragShadowBuilder(view: View) : DragShadowBuilder(view) {
+
         private val shadow: Drawable? by lazy {
-            (view as CustomBoxView).getBoxColor()?.let { ColorDrawable(it) }
+            (view as CustomBoxView).getBoxColor()?.let {
+                ColorDrawable(it).also { it.alpha = 0xCC }
+            }
         }
 
-        override fun onProvideShadowMetrics(
-            size: Point?,
-            touch: Point?,
-        ) {
+        override fun onProvideShadowMetrics(size: Point?, touch: Point?) {
             val width = view.width
             val height = view.height
 

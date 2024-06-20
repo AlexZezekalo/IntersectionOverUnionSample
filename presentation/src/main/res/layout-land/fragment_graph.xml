@@ -25,6 +25,12 @@
             android:layout_height="wrap_content"
             app:type="PREDICTED"/>
 
+        <com.zezekalo.iou.presentation.ui.view.CustomBoxView
+            android:id="@+id/unionBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:type="UNION_BOX"/>
+
     </com.zezekalo.iou.presentation.ui.view.CustomCoordinatePlateView>
 
     <LinearLayout

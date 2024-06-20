@@ -4,16 +4,14 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Point
-import android.graphics.RectF
-import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
-import android.view.View
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
-import com.zezekalo.iou.domain.model.BoundingBox
+import androidx.core.view.isGone
 import com.zezekalo.iou.presentation.R
 import com.zezekalo.iou.presentation.model.BoundingBoxUi
+import com.zezekalo.iou.presentation.model.isNullOrEmpty
 import com.zezekalo.iou.presentation.ui.view.listener.CoordinatePlateDragListener
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,9 +25,6 @@ class CustomCoordinatePlateView : FrameLayout {
 
     private var graphPaperColorInt: Int? = null
     private var graphPaperPaint: Paint? = null
-
-    private var unionColorInt: Int? = null
-    private var unionPaint: Paint? = null
 
     private var axisTextSize: Int? = null
 
@@ -51,9 +46,6 @@ class CustomCoordinatePlateView : FrameLayout {
 
     private val _predictedBoundingBoxFlow = MutableStateFlow<BoundingBoxUi?>(null)
     val predictedBoundingBoxFlow = _predictedBoundingBoxFlow.asStateFlow()
-
-    private val groundTruthBoundingBoxColor: ColorDrawable = ColorDrawable()
-    private val predictedBoundingBoxColor: ColorDrawable = ColorDrawable()
 
     constructor(context: Context) : super(context) {
         init(null, 0)
@@ -118,19 +110,6 @@ class CustomCoordinatePlateView : FrameLayout {
                             }
                     }
 
-            unionColorInt =
-                attributes
-                    .getColor(
-                        R.styleable.CustomCoordinatePlateView_unionColor,
-                        ContextCompat.getColor(context, R.color.def_union_color),
-                    ).also {
-                        unionPaint =
-                            Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                                color = it
-                                style = Paint.Style.FILL
-                            }
-                    }
-
             axisTextSize =
                 attributes.getDimensionPixelSize(
                     R.styleable.CustomGraphView_axisTextSize,
@@ -191,9 +170,6 @@ class CustomCoordinatePlateView : FrameLayout {
         requireNotNull(textPaint) { "textPaint is null" }.also {
             drawTextOnXaxis(canvas, it)
             drawTextOnYaxis(canvas, it)
-        }
-        requireNotNull(unionPaint) { "unionPaint is null" }.also {
-            drawBoundingBox(canvas, it, unionBox)
         }
         requireNotNull(graphPaperPaint) { "graphPaint is null" }.also {
             drawGraphPaper(canvas, it)
@@ -256,23 +232,6 @@ class CustomCoordinatePlateView : FrameLayout {
         }
     }
 
-    private fun drawBoundingBox(
-        canvas: Canvas,
-        paint: Paint,
-        box: BoundingBox?,
-    ) {
-        box?.let {
-            val rect =
-                RectF(
-                    (1 + box.left) * chunkX,
-                    (1 + box.top) * chunkY,
-                    (1 + box.right) * chunkX,
-                    (1 + box.bottom) * chunkY,
-                )
-            canvas.drawRect(rect, paint)
-        }
-    }
-
     override fun onLayout(
         changed: Boolean,
         left: Int,
@@ -283,33 +242,29 @@ class CustomCoordinatePlateView : FrameLayout {
         if (!isInit) init()
         for (child in children) {
             val boxType = (child as CustomBoxView).type
-            val box = if (boxType == CustomBoxView.BoxType.GROUND_TRUTH) {
-                    groundTruthBoundingBox
-                } else {
-                    predictedBoundingBox
-                }
-            if (child.visibility == View.GONE || box == null) continue
+            val box = when(boxType) {
+                CustomBoxView.BoxType.GROUND_TRUTH -> groundTruthBoundingBox
+                CustomBoxView.BoxType.PREDICTED -> predictedBoundingBox
+                CustomBoxView.BoxType.UNION_BOX -> unionBox
+            }
+            if (box == null) continue
+
             val boxWidth = ((box.right - box.left) * chunkX).toInt()
             val boxHeight = ((box.bottom - box.top) * chunkY).toInt()
             child.measure(
                 MeasureSpec.makeMeasureSpec(boxWidth, MeasureSpec.AT_MOST),
                 MeasureSpec.makeMeasureSpec(boxHeight, MeasureSpec.AT_MOST),
             )
-            child.layout(
-                (1 + box.left) * chunkX.toInt(),
-                (1 + box.top) * chunkY.toInt(),
-                (1 + box.right) * chunkX.toInt(),
-                (1 + box.bottom) * chunkY.toInt(),
-            )
-            child.x = (1 + box.left) * chunkX
-            child.y = (1 + box.top) * chunkY
-            child.getBoxColor()?.let { color ->
-                val boxColor = if (boxType == CustomBoxView.BoxType.GROUND_TRUTH) {
-                    groundTruthBoundingBoxColor
-                } else {
-                    predictedBoundingBoxColor
-                }
-                child.background = boxColor.also { it.color = color }
+            val boxLeft = (1 + box.left) * chunkX.toInt()
+            val boxTop = (1 + box.top) * chunkY.toInt()
+            val boxRight = (1 + box.right) * chunkX.toInt()
+            val boxBottom = (1 + box.bottom) * chunkY.toInt()
+            child.layout(boxLeft, boxTop, boxRight, boxBottom)
+
+            child.x = boxLeft.toFloat()
+            child.y = boxTop.toFloat()
+            if (boxType == CustomBoxView.BoxType.UNION_BOX) {
+                child.isGone = box.isNullOrEmpty()
             }
         }
     }
@@ -329,8 +284,8 @@ class CustomCoordinatePlateView : FrameLayout {
         var top: Int = Math.round(leftTopPoint.y/chunkY - 1)
         var right: Int = Math.round(rightBottomPoint.x/chunkX - 1)
         var bottom: Int = Math.round(rightBottomPoint.y/chunkY - 1)
-        val width = (rightBottomPoint.x - leftTopPoint.x)/chunkX.toInt()
-        val height = (rightBottomPoint.y - leftTopPoint.y)/chunkY.toInt()
+        val width = Math.round((rightBottomPoint.x - leftTopPoint.x)/chunkX)
+        val height = Math.round((rightBottomPoint.y - leftTopPoint.y)/chunkY)
         if (left < 0) {
             left = 0
             right = width

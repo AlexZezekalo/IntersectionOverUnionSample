@@ -19,6 +19,8 @@ data class BoundingBoxUi(
     }
 }
 
+fun BoundingBoxUi?.isNullOrEmpty(): Boolean = this == null || this == BoundingBoxUi.EMPTY
+
 fun BoundingBoxUi?.orEmpty(): BoundingBoxUi = this ?: BoundingBoxUi.EMPTY
 
 inline fun <reified T : BoundingBox> BoundingBoxUi.toDomain(clazz: KClass<T>): T =

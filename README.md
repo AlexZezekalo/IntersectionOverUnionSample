@@ -14,10 +14,18 @@ App module: Hilt modules, unit tests for repository and validator, assemble all 
 
 Presentation module: MVVM architecture with view binding, custom GraphView to show chart on the plot with axes. 
 There are 2 screens:
-- Graph fragment to show Boxes data and Chart; custom View: Chart with Boxes inside;
+- Graph fragment to show Boxes data and Coordinate Plate; Coordinate Plate with Boxes as the 
+  only custom view;
 - InputData dialog to collect user's coordinate input; with different types of validation: 1st quick immediate validation on presentation layer and 2nd validation on data layer.
 
 Domain module: domain models, repository(ComputationRepository, Validator) interfaces, 2 usecases(GetIntersectionOverUnionUseCase and GetValidationResultUseCase).
 
 Data module: repositories implementation.
+
+Release Notes
+v.1.0 - graphic interface, Coordinate plane(x-,y-axis) with Bounding Boxes (GroundBox, Predicted 
+and Union) on it, input initial Data through additional dialog screen;
+
+v.2.0 - added DragNDrop functionality for updating initial boxes Data through graphic interface 
+(moving boxes along a Coordinate plane)
     

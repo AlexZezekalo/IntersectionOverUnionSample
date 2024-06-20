@@ -21,9 +21,11 @@
     <declare-styleable name="CustomBoxView">
         <attr name="groundTruthColor"/>
         <attr name="predictedColor"/>
+        <attr name="unionColor"/>
         <attr name="type" format="enum">
             <enum name="GROUND_TRUTH" value="0"/>
             <enum name="PREDICTED" value="1"/>
+            <enum name="UNION_BOX" value="2"/>
         </attr>
     </declare-styleable>
 
