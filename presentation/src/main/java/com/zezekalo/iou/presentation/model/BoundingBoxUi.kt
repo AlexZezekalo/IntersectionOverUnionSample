@@ -19,4 +19,12 @@ data class BoundingBoxUi(
     }
 }
 
-inline fun <reified T : BoundingBox> BoundingBoxUi.toDomain(clazz: KClass<T>): T = clazz.constructors.first().call(left, top, right, bottom)
+fun BoundingBoxUi?.isNullOrEmpty(): Boolean = this == null || this == BoundingBoxUi.EMPTY
+
+fun BoundingBoxUi?.orEmpty(): BoundingBoxUi = this ?: BoundingBoxUi.EMPTY
+
+inline fun <reified T : BoundingBox> BoundingBoxUi.toDomain(clazz: KClass<T>): T =
+    clazz.constructors.first().call(left, top, right, bottom)
+
+fun BoundingBox.toUi(clazz: KClass<BoundingBoxUi>): BoundingBoxUi =
+    clazz.constructors.first().call(left, top, right, bottom)

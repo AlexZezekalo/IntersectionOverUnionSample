@@ -20,15 +20,18 @@ import com.zezekalo.iou.presentation.databinding.BoundingBoxTextLayoutBinding
 import com.zezekalo.iou.presentation.databinding.FragmentGraphBinding
 import com.zezekalo.iou.presentation.model.BoundingBoxUi
 import com.zezekalo.iou.presentation.model.InputDataUi
+import com.zezekalo.iou.presentation.model.toUi
 import com.zezekalo.iou.presentation.ui.base.BaseFragment
 import com.zezekalo.iou.presentation.ui.dialog.InputDataDialog
 import com.zezekalo.iou.presentation.ui.util.extensions.showBoxCoordinate
 import com.zezekalo.iou.presentation.ui.util.extensions.showIoU
 import com.zezekalo.iou.presentation.ui.util.mapper.ThrowableToErrorMessageMapper
+import com.zezekalo.iou.presentation.ui.view.CustomBoxView
 import com.zezekalo.iou.presentation.viewmodel.GraphViewModel
 import com.zezekalo.iou.presentation.viewmodel.UiState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -77,7 +80,27 @@ class GraphFragment : BaseFragment<FragmentGraphBinding, GraphViewModel>() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { viewModel.uiState.collect(::onUiStateChange) }
                 launch { viewModel.inputDataUi.collect(::onInputDataChanged) }
+                launch { requireBinding().customCoordinatePlateView.groundTruthBoundingBoxFlow
+                    .collect(::onManualGroundTruthBoundingBoxUpdate)
+                }
+                launch { requireBinding().customCoordinatePlateView.predictedBoundingBoxFlow
+                    .collect(::onManualPredictedBoundingBoxUpdate)
+                }
             }
+        }
+    }
+
+    private fun onManualGroundTruthBoundingBoxUpdate(boundingBoxUi: BoundingBoxUi?) {
+        boundingBoxUi?.let {
+            viewModel.setInputBox(it, CustomBoxView.BoxType.GROUND_TRUTH)
+            onGroundTruthBoundingBoxChanged(it)
+        }
+    }
+
+    private fun onManualPredictedBoundingBoxUpdate(boundingBoxUi: BoundingBoxUi?) {
+        boundingBoxUi?.let {
+            viewModel.setInputBox(it, CustomBoxView.BoxType.PREDICTED)
+            onPredictedBoundingBoxChanged(it)
         }
     }
 
@@ -115,12 +138,12 @@ class GraphFragment : BaseFragment<FragmentGraphBinding, GraphViewModel>() {
     }
 
     private fun onOutputDataReceived(outputData: OutputData?) {
-        showUnionBox(outputData?.unionBox)
+        showUnionBoxCoordinates(outputData?.unionBox)
         showIntersectionOverUnion(outputData?.intersectionOverUnion)
         drawBoxes(outputData)
     }
 
-    private fun showUnionBox(unionBox: UnionBox?) {
+    private fun showUnionBoxCoordinates(unionBox: UnionBox?) {
         requireBinding().unionBoxCoordinatesLayout.also { layout ->
             unionBox?.let { box ->
                 showBoundingBoxCoordinates(box, layout)
@@ -138,17 +161,20 @@ class GraphFragment : BaseFragment<FragmentGraphBinding, GraphViewModel>() {
 
     private fun drawBoxes(outputData: OutputData?) {
         requireBinding().run {
-            val groundTruthBoundingBox = outputData?.inputData?.groundTruthBoundingBox ?: GroundTruthBoundingBox.INIT
-            val predictedBoundingBox = outputData?.inputData?.predictedBoundingBox ?: PredictedBoundingBox.INIT
-            customGraphView.setBoxes(
-                groundTruthBoundingBox = groundTruthBoundingBox,
-                predictedBoundingBox = predictedBoundingBox,
-                unionBox = outputData?.unionBox,
+            val groundTruthBoundingBox =
+                outputData?.inputData?.groundTruthBoundingBox ?: GroundTruthBoundingBox.INIT
+            val predictedBoundingBox =
+                outputData?.inputData?.predictedBoundingBox ?: PredictedBoundingBox.INIT
+            customCoordinatePlateView.setBoxes(
+                groundTruthBoundingBox = groundTruthBoundingBox.toUi(BoundingBoxUi::class),
+                predictedBoundingBox = predictedBoundingBox.toUi(BoundingBoxUi::class),
+                unionBox = outputData?.unionBox?.toUi(BoundingBoxUi::class),
             )
         }
     }
 
     private fun showError(throwable: Throwable) {
+        Timber.e("showError: ${throwable.message}")
         Snackbar.make(requireBinding().root, throwableToErrorMessageMapper.map(throwable), Snackbar.LENGTH_LONG).show()
     }
 }

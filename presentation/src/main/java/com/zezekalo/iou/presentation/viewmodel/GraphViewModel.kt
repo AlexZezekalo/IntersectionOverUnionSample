@@ -2,8 +2,11 @@ package com.zezekalo.iou.presentation.viewmodel
 
 import com.zezekalo.iou.domain.model.OutputData
 import com.zezekalo.iou.domain.usecase.GetIntersectionOverUnionUseCase
+import com.zezekalo.iou.presentation.model.BoundingBoxUi
 import com.zezekalo.iou.presentation.model.InputDataUi
+import com.zezekalo.iou.presentation.model.orEmpty
 import com.zezekalo.iou.presentation.model.toDomain
+import com.zezekalo.iou.presentation.ui.view.CustomBoxView
 import com.zezekalo.iou.presentation.viewmodel.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 sealed class UiState {
@@ -49,7 +53,19 @@ class GraphViewModel
             calculateIntersectionOverUnion(inputDataUi)
         }
 
-        private fun calculateIntersectionOverUnion(inputDataUi: InputDataUi) {
+    fun setInputBox(boundingBoxUi: BoundingBoxUi?, type: CustomBoxView.BoxType) {
+        _inputDataUi.update {
+            if (type == CustomBoxView.BoxType.GROUND_TRUTH) {
+                inputDataUi.value.copy(groundTruthBoundingBox = boundingBoxUi.orEmpty())
+            } else {
+                inputDataUi.value.copy(predictedBoundingBox = boundingBoxUi.orEmpty())
+            }
+        }
+
+        calculateIntersectionOverUnion(inputDataUi.value)
+    }
+
+    private fun calculateIntersectionOverUnion(inputDataUi: InputDataUi) {
             scope.launch {
                 val inputData = inputDataUi.toDomain()
                 useCase(inputData)
@@ -59,6 +75,7 @@ class GraphViewModel
         }
 
         private fun updateUiState(uiState: UiState) {
+            Timber.i("updateUiState: Got uiState: $uiState")
             _uiState.update { uiState }
         }
     }

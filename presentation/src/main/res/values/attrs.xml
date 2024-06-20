@@ -9,4 +9,24 @@
         <attr name="unionColor" format="color"/>
         <attr name="axisTextSize" format="dimension"/>
     </declare-styleable>
+
+    <declare-styleable name="CustomCoordinatePlateView">
+        <attr name="axesTextColor"/>
+        <attr name="axesColor"/>
+        <attr name="graphColor"/>
+        <attr name="unionColor"/>
+        <attr name="axisTextSize"/>
+    </declare-styleable>
+
+    <declare-styleable name="CustomBoxView">
+        <attr name="groundTruthColor"/>
+        <attr name="predictedColor"/>
+        <attr name="unionColor"/>
+        <attr name="type" format="enum">
+            <enum name="GROUND_TRUTH" value="0"/>
+            <enum name="PREDICTED" value="1"/>
+            <enum name="UNION_BOX" value="2"/>
+        </attr>
+    </declare-styleable>
+
 </resources>
