@@ -71,8 +71,10 @@ class CustomBoxView : View {
             attributes.recycle()
         }
         boxColorInt?.let { background = ColorDrawable(it) }
-        isLongClickable = true
-        setOnLongClickListener(onLongClickListener)
+        if (type != BoxType.UNION_BOX) {
+            isLongClickable = true
+            setOnLongClickListener(onLongClickListener)
+        }
     }
 
     enum class BoxType {
