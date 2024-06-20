@@ -2,7 +2,6 @@ package com.zezekalo.iou.presentation.ui.fragment
 
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.VisibleForTesting
 import androidx.core.view.isVisible
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResultListener
@@ -38,12 +37,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class GraphFragment : BaseFragment<FragmentGraphBinding, GraphViewModel>() {
     @Inject lateinit var throwableToErrorMessageMapper: ThrowableToErrorMessageMapper
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        runTestBoxesCase()
-    }
 
     override fun onViewBound(
         binding: FragmentGraphBinding,
@@ -184,18 +177,4 @@ class GraphFragment : BaseFragment<FragmentGraphBinding, GraphViewModel>() {
         Timber.e("showError: ${throwable.message}")
         Snackbar.make(requireBinding().root, throwableToErrorMessageMapper.map(throwable), Snackbar.LENGTH_LONG).show()
     }
-
-    @VisibleForTesting
-    private fun runTestBoxesCase() {
-        onGroundTruthBoundingBoxChanged(testInputData.groundTruthBoundingBox)
-        onPredictedBoundingBoxChanged(testInputData.predictedBoundingBox)
-        viewModel.setInputData(testInputData)
-    }
 }
-
-private val testInputData =
-    InputDataUi(
-        groundTruthBoundingBox = BoundingBoxUi(left = 3, top = 3, right = 10, bottom = 10),
-        predictedBoundingBox = BoundingBoxUi(left = 7, top = 7, right = 13, bottom = 13),
-    )
-

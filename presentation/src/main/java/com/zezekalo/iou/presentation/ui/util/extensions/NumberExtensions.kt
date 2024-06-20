@@ -1,7 +1,7 @@
 package com.zezekalo.iou.presentation.ui.util.extensions
 
 fun Int.showBoxCoordinate(description: String): String {
-    val value = if (this == 0) "< >" else this.toString()
+    val value = if (this < 0) "< >" else this.toString()
     return "$description $value"
 }
 

@@ -17,7 +17,6 @@ import com.zezekalo.iou.presentation.model.BoundingBoxUi
 import com.zezekalo.iou.presentation.ui.view.listener.CoordinatePlateDragListener
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import timber.log.Timber
 
 class CustomCoordinatePlateView : FrameLayout {
     private var textColorInt: Int? = null
@@ -282,15 +281,6 @@ class CustomCoordinatePlateView : FrameLayout {
         bottom: Int,
     ) {
         if (!isInit) init()
-        val children = children
-
-        val childLeft = paddingLeft
-        val childTop = paddingTop
-        val childRight = measuredWidth - paddingRight
-        val childBottom = measuredHeight - paddingBottom
-        val childWidth = childRight - childLeft
-        val childHeight = childBottom - childTop
-
         for (child in children) {
             val boxType = (child as CustomBoxView).type
             val box = if (boxType == CustomBoxView.BoxType.GROUND_TRUTH) {
@@ -299,9 +289,11 @@ class CustomCoordinatePlateView : FrameLayout {
                     predictedBoundingBox
                 }
             if (child.visibility == View.GONE || box == null) continue
+            val boxWidth = ((box.right - box.left) * chunkX).toInt()
+            val boxHeight = ((box.bottom - box.top) * chunkY).toInt()
             child.measure(
-                MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(boxWidth, MeasureSpec.AT_MOST),
+                MeasureSpec.makeMeasureSpec(boxHeight, MeasureSpec.AT_MOST),
             )
             child.layout(
                 (1 + box.left) * chunkX.toInt(),
@@ -309,6 +301,8 @@ class CustomCoordinatePlateView : FrameLayout {
                 (1 + box.right) * chunkX.toInt(),
                 (1 + box.bottom) * chunkY.toInt(),
             )
+            child.x = (1 + box.left) * chunkX
+            child.y = (1 + box.top) * chunkY
             child.getBoxColor()?.let { color ->
                 val boxColor = if (boxType == CustomBoxView.BoxType.GROUND_TRUTH) {
                     groundTruthBoundingBoxColor
@@ -317,33 +311,43 @@ class CustomCoordinatePlateView : FrameLayout {
                 }
                 child.background = boxColor.also { it.color = color }
             }
-            Timber.d("onLayout: child ${child.type}; width=${child.measuredWidth}, height=${child.measuredHeight}")
         }
     }
 
     fun updateBoxLocation(type: CustomBoxView.BoxType, leftTopPoint: Point, rightBottom: Point) {
-        val left: Int = Math.round(leftTopPoint.x/chunkX - 1)
-        val top: Int = Math.round(leftTopPoint.y/chunkY - 1)
-        val right: Int = Math.round(rightBottom.x/chunkX - 1)
-        val bottom: Int = Math.round(rightBottom.y/chunkY - 1)
-        val boundingBoxUi = BoundingBoxUi(left, top, right, bottom)
-        Timber.e("updateBoxLocation: box: $boundingBoxUi")
+        val boundingBoxUi = getValidBoxCoordinates(leftTopPoint, rightBottom)
         if (type == CustomBoxView.BoxType.GROUND_TRUTH) {
             _groundTruthBoundingBoxFlow.tryEmit(boundingBoxUi)
-            setBoxes(
-                groundTruthBoundingBox = boundingBoxUi,
-                predictedBoundingBox = predictedBoundingBox ?: BoundingBoxUi.EMPTY,
-                unionBox = unionBox
-            )
         } else {
             _predictedBoundingBoxFlow.tryEmit(boundingBoxUi)
-            setBoxes(
-                groundTruthBoundingBox = groundTruthBoundingBox ?: BoundingBoxUi.EMPTY,
-                predictedBoundingBox = boundingBoxUi,
-                unionBox = unionBox
-            )
         }
-        requestLayout()
+    }
+
+    private fun getValidBoxCoordinates(leftTopPoint: Point, rightBottomPoint: Point):
+            BoundingBoxUi {
+        var left: Int = Math.round(leftTopPoint.x/chunkX - 1)
+        var top: Int = Math.round(leftTopPoint.y/chunkY - 1)
+        var right: Int = Math.round(rightBottomPoint.x/chunkX - 1)
+        var bottom: Int = Math.round(rightBottomPoint.y/chunkY - 1)
+        val width = (rightBottomPoint.x - leftTopPoint.x)/chunkX.toInt()
+        val height = (rightBottomPoint.y - leftTopPoint.y)/chunkY.toInt()
+        if (left < 0) {
+            left = 0
+            right = width
+        }
+        if (top < 0) {
+            top = 0
+            bottom = width
+        }
+        if (right > DEFAULT_CHUNK_IN_A_ROWS) {
+            right = DEFAULT_CHUNK_IN_A_ROWS
+            left = DEFAULT_CHUNK_IN_A_ROWS - width
+        }
+        if (bottom > DEFAULT_CHUNK_IN_A_ROWS) {
+            bottom = DEFAULT_CHUNK_IN_A_ROWS
+            top = DEFAULT_CHUNK_IN_A_ROWS - height
+        }
+        return BoundingBoxUi(left, top, right, bottom)
     }
 
     override fun onAttachedToWindow() {

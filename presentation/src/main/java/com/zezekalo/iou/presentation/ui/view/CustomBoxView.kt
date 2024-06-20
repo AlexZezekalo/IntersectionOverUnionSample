@@ -14,7 +14,6 @@ import android.view.View.OnLongClickListener
 import androidx.annotation.StyleableRes
 import androidx.core.content.ContextCompat
 import com.zezekalo.iou.presentation.R
-import timber.log.Timber
 
 class CustomBoxView : View {
     private var boxColorInt: Int? = null
@@ -49,7 +48,6 @@ class CustomBoxView : View {
             )
         try {
             type = BoxType.entries.toTypedArray()[attributes.getInt(R.styleable.CustomBoxView_type, 0)]
-            Timber.i("type: $type")
             @StyleableRes
             val styleableResId: Int =
                 if (type == BoxType.GROUND_TRUTH) {
