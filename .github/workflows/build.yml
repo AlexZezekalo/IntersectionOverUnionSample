@@ -62,7 +62,7 @@ jobs:
         with:
           gradlePath: app/build.gradle.kts
           versionCode: ${{github.run_number}}
-          versionName: 1.0.0
+          versionName: 2.0.0
 
       - name: Build prodRelease
         run: ./gradlew assembleRelease

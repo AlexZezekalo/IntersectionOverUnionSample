@@ -87,6 +87,9 @@ dependencies {
     testApi(project(":domain"))
     testApi(libs.timber)
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.hamcrest)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }
