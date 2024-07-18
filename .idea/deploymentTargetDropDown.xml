@@ -2,6 +2,9 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="MainActivityTest">
+        <State />
+      </entry>
       <entry key="app">
         <State>
           <targetSelectedWithDropDown>
@@ -10,13 +13,19 @@
               <deviceKey>
                 <Key>
                   <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="$USER_HOME$/.android/avd/Pixel_2_API_30.avd" />
+                  <value value="$USER_HOME$/.android/avd/Pixel_3a_API_34.avd" />
                 </Key>
               </deviceKey>
             </Target>
           </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-06-06T20:24:11.866248913Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-07-18T16:43:32.800484611Z" />
         </State>
+      </entry>
+      <entry key="initialBoxCoordinates_zero()">
+        <State />
+      </entry>
+      <entry key="inputValidBoxCoordinates_clearButtonClick()">
+        <State />
       </entry>
     </value>
   </component>

@@ -247,6 +247,9 @@ class CustomCoordinatePlateView : FrameLayout {
                 CustomBoxView.BoxType.PREDICTED -> predictedBoundingBox
                 CustomBoxView.BoxType.UNION_BOX -> unionBox
             }
+            if (boxType == CustomBoxView.BoxType.UNION_BOX) {
+                child.isGone = box.isNullOrEmpty()
+            }
             if (box == null) continue
 
             val boxWidth = ((box.right - box.left) * chunkX).toInt()
@@ -263,9 +266,6 @@ class CustomCoordinatePlateView : FrameLayout {
 
             child.x = boxLeft.toFloat()
             child.y = boxTop.toFloat()
-            if (boxType == CustomBoxView.BoxType.UNION_BOX) {
-                child.isGone = box.isNullOrEmpty()
-            }
         }
     }
 

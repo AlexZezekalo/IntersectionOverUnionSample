@@ -26,7 +26,7 @@ android {
         versionCode = libs.versions.version.code.get().toInt()
         versionName = libs.versions.version.name.get()
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.zezekalo.iou.app.HiltTestRunner"
     }
 
     signingConfigs {
@@ -90,6 +90,8 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.hamcrest)
     testImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.hilt.android.testing)
+    kaptAndroidTest(libs.hilt.compiler)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }
