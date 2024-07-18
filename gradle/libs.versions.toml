@@ -1,8 +1,10 @@
 [versions]
 compile-sdk-version = "34"
+hamcrest = "2.2"
 ktlint-cli = "1.0.0"
 ktlin-plugin = "12.1.1"
 min-sdk-version = "26"
+mockk = "1.13.11"
 target-sdk-version = "34"
 version-code = "2"
 version-name = "2.0"
@@ -30,6 +32,7 @@ navigation = "2.7.7"
 androidx-constraint-layout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragment-ktx" }
+hamcrest = { module = "org.hamcrest:hamcrest", version.ref = "hamcrest" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 inject = { group = "javax.inject", name = "javax.inject", version.ref = "inject" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit-version" }
@@ -38,8 +41,10 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 androidx-activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines-core" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-core"}
 ktlint-cli = { module = "con.pinterest.ktlint:ktlint-cli", version.ref = "ktlint-cli" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
